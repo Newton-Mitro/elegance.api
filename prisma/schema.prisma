@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// datasource db {
+//   provider = "mysql"
+//   url      = env("DATABASE_URL")
+// }
+
+// Enum for user roles (admin, manager, receptionist, stylist, customer)
+enum UserRole {
+  ADMIN
+  MANAGER
+  RECEPTIONIST
+  STYLIST
+  CUSTOMER
+}
+
+// User table for both registered customers and staff (admin, manager, receptionist, etc.)
+model User {
+  id        String   @id @default(uuid())
+  name      String?
+  phone     String   @unique
+  email     String?  @unique
+  role      UserRole @default(RECEPTIONIST)
+  createdAt DateTime @default(now())
+
+  invoices     Invoice[]
+  appointments Appointment[]
+  LoyaltyPoint LoyaltyPoint[]
+  Sale         Sale[]
+}
+
+// Service categories
+model ServiceCategory {
+  id       String    @id @default(uuid())
+  name     String    @unique // e.g. "HAIR"
+  nameBn   String? // e.g. "চুলের সেবা"
+  services Service[]
+}
+
+// Service table for beauty parlor services
+model Service {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  nameBn      String?
+  description String?
+  categoryId  String
+  price       Decimal
+  durationMin Int
+  createdAt   DateTime @default(now())
+
+  category           ServiceCategory      @relation(fields: [categoryId], references: [id])
+  AppointmentService AppointmentService[]
+}
+
+// Enum for appointment status (scheduled, completed, cancelled)
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+// Appointment table for managing appointments
+model Appointment {
+  id              String            @id @default(uuid())
+  userId          String? // Nullable userId for walk-in customers
+  appointmentTime DateTime // Scheduled appointment time
+  isWalkIn        Boolean           @default(false) // If the appointment is a walk-in
+  status          AppointmentStatus @default(SCHEDULED)
+  createdAt       DateTime          @default(now())
+
+  invoice  Invoice?
+  services AppointmentService[]
+  user     User?                @relation(fields: [userId], references: [id]) // Nullable user relation for walk-ins
+}
+
+// AppointmentService table to link services with appointments and store pricing at the time of booking
+model AppointmentService {
+  id            String  @id @default(uuid())
+  appointmentId String
+  serviceId     String
+  price         Decimal // Store the price at time of booking
+
+  service     Service     @relation(fields: [serviceId], references: [id])
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
+}
+
+// Enum for invoice statuses (pending, paid, cancelled)
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+// Invoice table for managing payments for appointments
+model Invoice {
+  id            String        @id @default(uuid())
+  userId        String?
+  appointmentId String        @unique
+  totalAmount   Decimal
+  paidAmount    Decimal
+  paymentMethod String?
+  paymentStatus PaymentStatus @default(PENDING)
+  paymentDate   DateTime?
+  createdAt     DateTime      @default(now())
+
+  vatPercentage Float // VAT percentage (e.g., 15)
+  vatAmount     Decimal // Calculated VAT amount
+  finalAmount   Decimal // Total amount including VAT
+
+  user        User?       @relation(fields: [userId], references: [id])
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
+}
+
+model ProductCategory {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  products Product[]
+}
+
+model Product {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+  price       Decimal
+  stock       Int // Available stock
+  categoryId  String
+
+  category    ProductCategory @relation(fields: [categoryId], references: [id])
+  SaleProduct SaleProduct[]
+}
+
+// Sale (Transaction) model
+model Sale {
+  id            String        @id @default(uuid())
+  customerId    String?
+  totalAmount   Decimal // Total price of the sale
+  paymentStatus PaymentStatus @default(PENDING)
+  paymentMethod String? // Payment method like 'cash', 'credit', 'debit', etc.
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  products SaleProduct[] // Products involved in the sale
+  customer User?         @relation(fields: [customerId], references: [id])
+}
+
+// SaleProduct model (for many-to-many relationship with product)
+model SaleProduct {
+  id        String  @id @default(uuid())
+  saleId    String
+  productId String
+  quantity  Int // Quantity sold
+  price     Decimal // Price at the time of sale
+
+  sale    Sale    @relation(fields: [saleId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model LoyaltyPoint {
+  id        String   @id @default(uuid())
+  userId    String
+  points    Int      @default(0) // Points earned by the user
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Discount {
+  id         String   @id @default(uuid())
+  code       String   @unique // Discount code (e.g., 'SUMMER20', 'MEMBER', 'NON_MEMBER', 'NEW_YEAR', 'WOMANS_DAY')
+  percentage Float // Discount percentage (e.g., 10 means 10% off)
+  startDate  DateTime // When the discount is valid from
+  endDate    DateTime // When the discount is valid until
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
