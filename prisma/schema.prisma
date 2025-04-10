@@ -149,6 +149,7 @@ model Sale {
 
   products SaleProduct[] // Products involved in the sale
   customer User?         @relation(fields: [customerId], references: [id])
+  Refund   Refund[]
 }
 
 // SaleProduct model (for many-to-many relationship with product)
@@ -161,6 +162,23 @@ model SaleProduct {
 
   sale    Sale    @relation(fields: [saleId], references: [id])
   product Product @relation(fields: [productId], references: [id])
+}
+
+enum RefundStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Refund {
+  id           String       @id @default(uuid())
+  saleId       String
+  reason       String?
+  refundAmount Decimal
+  status       RefundStatus @default(PENDING)
+  createdAt    DateTime     @default(now())
+
+  sale Sale @relation(fields: [saleId], references: [id])
 }
 
 model LoyaltyPoint {
