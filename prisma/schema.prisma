@@ -117,6 +117,7 @@ model Invoice {
 
   user        User?       @relation(fields: [userId], references: [id])
   appointment Appointment @relation(fields: [appointmentId], references: [id])
+  Refund      Refund[]
 }
 
 model ProductCategory {
@@ -133,8 +134,46 @@ model Product {
   stock       Int // Available stock
   categoryId  String
 
-  category    ProductCategory @relation(fields: [categoryId], references: [id])
-  SaleProduct SaleProduct[]
+  SaleProduct   SaleProduct[]
+  ProductStock  ProductStock[]
+  StockMovement StockMovement[]
+  category      ProductCategory @relation(fields: [categoryId], references: [id])
+}
+
+// Product Stock (Batch-level)
+model ProductStock {
+  id            String    @id @default(uuid())
+  productId     String
+  batchNumber   String?
+  quantity      Int
+  purchasePrice Decimal
+  salePrice     Decimal
+  expiryDate    DateTime?
+  addedAt       DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  StockMovement StockMovement[]
+  product       Product         @relation(fields: [productId], references: [id])
+}
+
+enum MovementType {
+  IN
+  OUT
+}
+
+// Stock Movement (log)
+model StockMovement {
+  id        String       @id @default(uuid())
+  productId String
+  stockId   String
+  quantity  Int
+  type      MovementType // IN for purchase, OUT for sale/refund
+  reference String? // Optional: sale ID, refund ID, etc.
+  reason    String?
+  createdAt DateTime     @default(now())
+
+  product Product      @relation(fields: [productId], references: [id])
+  stock   ProductStock @relation(fields: [stockId], references: [id])
 }
 
 // Sale (Transaction) model
@@ -171,14 +210,16 @@ enum RefundStatus {
 }
 
 model Refund {
-  id           String       @id @default(uuid())
-  saleId       String
-  reason       String?
-  refundAmount Decimal
-  status       RefundStatus @default(PENDING)
-  createdAt    DateTime     @default(now())
+  id             String       @id @default(uuid())
+  saleId         String? // For product sale refund
+  invoiceId      String? // For appointment refund
+  refundedAmount Decimal
+  reason         String?
+  status         RefundStatus @default(PENDING)
+  createdAt      DateTime     @default(now())
 
-  sale Sale @relation(fields: [saleId], references: [id])
+  sale    Sale?    @relation(fields: [saleId], references: [id])
+  invoice Invoice? @relation(fields: [invoiceId], references: [id])
 }
 
 model LoyaltyPoint {
