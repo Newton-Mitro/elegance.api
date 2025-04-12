@@ -1,4 +1,5 @@
 ## 🧩 MODULE OVERVIEW
+
 ```
 Module--------------Description
 Auth----------------Handles login, JWT token, role-based access
@@ -24,7 +25,9 @@ Notifications*------(Optional) Notify customers via SMS/email
 Scheduler-----------For monthly tasks like closing books, expiring discounts
 Settings------------System-wide settings (VAT %, loyalty settings, etc.)
 ```
+
 ### 🧱 DOMAIN STRUCTURE IDEA
+
 ```bash
 src/
 ├── auth/
@@ -67,7 +70,8 @@ Step    Action	                                Affected Tables	                 
 
 ```
 
-### 📊 FLOW DIAGRAM 
+### 📊 FLOW DIAGRAM
+
 ```
                  ┌──────────────┐
                  │ Walk-in?     │
@@ -99,16 +103,19 @@ Step    Action	                                Affected Tables	                 
 ```
 
 ## 💄 PRODUCT SALE FLOW (Walk-in + Registered)
+
 ```
-Step	Action	Affected Tables	Notes
-1️⃣	Customer (walk-in or registered) chooses products	Product (read)	No changes yet
-2️⃣	Staff creates a Sale entry	Sale	customerId is optional (nullable for walk-ins)
-3️⃣	Add each product to the sale	SaleProduct	Store quantity and price at time of sale
-4️⃣	Total is calculated (with VAT, discount if any)	Sale	totalAmount, paymentStatus, paymentMethod updated
-5️⃣	Stock is reduced	Product	Reduce stock by SaleProduct.quantity
-6️⃣	Loyalty is applied (if registered)	LoyaltyPoint	Optional, based on customerId
+Step----Action------------------------------------------------Affected Tables----Notes
+1️⃣	Customer (walk-in or registered) chooses products------Product (read)----No changes yet
+2️⃣	Staff creates a Sale entry-----------------------------Sale--------------customerId is optional (nullable for walk-ins)
+3️⃣	Add each product to the sale---------------------------SaleProduct-------Store quantity and price at time of sale
+4️⃣	Total is calculated (with VAT, discount if any)--------Sale--------------totalAmount, paymentStatus, paymentMethod updated
+5️⃣	Stock is reduced---------------------------------------Product-----------Reduce stock by SaleProduct.quantity
+6️⃣	Loyalty is applied (if registered)---------------------LoyaltyPoint------Optional, based on customerId
 ```
+
 ### 📊 FLOW DIAGRAM
+
 ```
                 ┌──────────────┐
                 │ Customer     │
@@ -135,24 +142,30 @@ Step	Action	Affected Tables	Notes
           │ Add Loyalty (if user)   │  ← 🟢 `LoyaltyPoint`
           └─────────────────────────┘
 ```
+
 ## 🔁 REFUND FLOW (Product & Appointment)
+
 🔸 Supports:
+
 - Product refunds (partial or full)
 - Appointment refunds (for services)
 - Manual or automatic refund approvals
 - Tracks refund reason, amount, and status
 
 ### 🧾 FLOW OVERVIEW
+
 ```
-Step	Action	Affected Tables	Notes
-1️⃣	Staff initiates a refund	Refund	New entry with refundedAmount, reason, RefundStatus
-2️⃣	Refund is linked to a sale or invoice	Refund (via saleId or invoiceId)	One of these must be filled
-3️⃣	Stock restored (for product refunds)	Product	Increase stock by SaleProduct.quantity
-4️⃣	Refund status updated (e.g., APPROVED)	Refund	Manual or auto-approved
-5️⃣	Refund processed (cash, original method, etc.)	-	Depends on business policy
-6️⃣	Loyalty points are deducted (if already awarded)	LoyaltyPoint	Only if refunded fully and user was registered
+Step----Action---------------------------------------------Affected Tables--------------------------Notes
+1️⃣	Staff initiates a refund---------------------------Refund-----------------------------------New entry with refundedAmount, reason, RefundStatus
+2️⃣	Refund is linked to a sale or invoice--------------Refund (via saleId or invoiceId)---------One of these must be filled
+3️⃣	Stock restored (for product refunds)---------------Product----------------------------------Increase stock by SaleProduct.quantity
+4️⃣	Refund status updated (e.g., APPROVED)-------------Refund-----------------------------------Manual or auto-approved
+5️⃣	Refund processed (cash, original method, etc.)----------------------------------------------Depends on business policy
+6️⃣	Loyalty points are deducted (if already awarded)---LoyaltyPoint-----------------------------Only if refunded fully and user was registered
 ```
+
 ### 🔄 FLOW DIAGRAM
+
 ```
                 ┌───────────────┐
                 │ Staff/Manager │
@@ -179,9 +192,10 @@ Step	Action	Affected Tables	Notes
      └───────────────────────────────┘
 ```
 
-## 🗂️ STOCK MANAGEMENT FLOW 
+## 🗂️ STOCK MANAGEMENT FLOW
 
 ### 🗂️ STOCK MANAGEMENT FLOW DIAGRAM
+
 ```
            +-------------------+
            |   Add New Stock   |
@@ -216,23 +230,29 @@ Update ProductStock         Update ProductStock
        | (Sale, Refund, Adjust)  |
        +-------------------------+
 ```
+
 ### 🧾 FLOW BREAKDOWN
+
 **✅ 1. Purchase (Add Stock)**
+
 - Staff adds new stock entry (e.g., 50 shampoo bottles)
 - Quantity is added to Product.stock
 - Record purchase in accounting (Inventory, Cash/Bank)
 
 **✅ 2. Product Sale**
+
 - When a product is sold, its quantity is reduced
 - System deducts sold quantity from Product.stock
 - Records COGS and revenue in accounting
 
 **✅ 3. Refund**
+
 - If product is returned:
   - Quantity added back to Product.stock
   - Accounting adjusts for returned value
 
 **✅ 4. Stock Adjustment (Loss/Damage)**
+
 - Manual entry for damaged, lost, or expired items
 - Reduces Product.stock
 - Optionally logs who adjusted and why
@@ -355,10 +375,12 @@ Stock Report                            Product
 - JWT-based Auth (Admin, Staff, etc.)
 - Role-based Access Control (RBAC)
 
-
 ## 💰 ACCOUNTING INTEGRATION FLOW
+
 ### ✅ Define Ledger Accounts
+
 First, ensure your accounting system has these Chart of Accounts:
+
 ```
 Account Name	                  Type	              Code
 Cash	                          Asset	              101
@@ -372,17 +394,20 @@ Refunds	                          Expense	      502
 Loyalty Point Expense	          Expense	      503
 Discount Given	                  Expense	      504
 ```
+
 ### 🛒 2. On Product Sale
+
 Trigger: Sale completed (Sale is marked PAID)
 
 Accounting Entries (Double Entry):
 
 ```
 Debit	              Credit
-Cash/Bank	
+Cash/Bank
                       Product Sales
                       VAT Payable (if VAT exists)
 ```
+
 You may also track Cost of Goods Sold:
 
 ```
@@ -391,37 +416,45 @@ Cost of Goods Sold	    Inventory
 ```
 
 ### 🔁 3. On Product Refund
+
 Trigger: SaleProduct.refundStatus = REFUNDED
 
 Accounting Entries:
 
-Debit	Credit
-Refunds (Expense)	Cash/Bank
-Inventory	Cost of Goods Sold
+Debit Credit
+Refunds (Expense) Cash/Bank
+Inventory Cost of Goods Sold
+
 ### 🎁 4. On Loyalty Point Redemption
+
 Trigger: Loyalty point used in sale
 
 Accounting Entries:
 
-Debit	Credit
-Loyalty Point Expense	Cash/Bank/Product Sales
+Debit Credit
+Loyalty Point Expense Cash/Bank/Product Sales
+
 ### 💳 5. On Discount Applied
+
 Trigger: Discount applied to sale
 
 Accounting Entries:
 
-Debit	Credit
-Discount Given	Product Sales
+Debit Credit
+Discount Given Product Sales
+
 ### 📥 6. On Stock Purchase
+
 Trigger: Manager adds stock
 
 Accounting Entries:
 
-Debit	Credit
-Inventory	Cash/Bank
+Debit Credit
+Inventory Cash/Bank
 (You can also use a Supplier Payable if it’s on credit.)
 
 🔁 FLOW DIAGRAM
+
 ```lua
 Sale Completed  ---> Create Accounting Voucher for Sale
 Refund Issued   ---> Create Accounting Voucher for Refund
@@ -429,61 +462,69 @@ Stock Purchased ---> Create Voucher for Inventory Purchase
 ```
 
 ## 📊 ACCOUNTING ENTRIES – FULL EXAMPLES
+
 ### ✅ 1. Product Purchase Entry
+
 Scenario: You purchase 100 shampoo bottles for ৳100 each (total ৳10,000)
 
 Accounting Entry:
 
-Account	Debit	Credit
-Inventory	৳10,000	
-Cash / Bank		৳10,000
+Account Debit Credit
+Inventory ৳10,000
+Cash / Bank ৳10,000
 ➡️ This increases inventory and reduces cash.
 
 ### ✅ 2. Product Sale Entry
+
 Scenario: You sell 2 bottles of shampoo at ৳200 each
 COGS (Cost of Goods Sold) per unit = ৳100
 
 Accounting Entry:
 
-Account	Debit	Credit
-Cash / Bank / Receivable	৳400	
-Sales Revenue		৳400
-Cost of Goods Sold (COGS)	৳200	
-Inventory		৳200
+Account Debit Credit
+Cash / Bank / Receivable ৳400
+Sales Revenue ৳400
+Cost of Goods Sold (COGS) ৳200
+Inventory ৳200
 ➡️ This recognizes income and reduces inventory, while tracking cost.
 
 ### ✅ 3. Service Sale Entry
+
 Scenario: Customer pays ৳1000 for a haircut
 
 Accounting Entry:
 
-Account	Debit	Credit
-Cash / Bank / Receivable	৳1000	
-Service Revenue		৳1000
+Account Debit Credit
+Cash / Bank / Receivable ৳1000
+Service Revenue ৳1000
+
 ### ✅ 4. Refund Entry
+
 Scenario: Customer returns a shampoo (৳200), refund is given
 
 Accounting Entry:
 
-Account	Debit	Credit
-Sales Return	৳200	
-Cash / Bank / Payable		৳200
-Inventory	৳100	
-Cost of Goods Sold		৳100
+Account Debit Credit
+Sales Return ৳200
+Cash / Bank / Payable ৳200
+Inventory ৳100
+Cost of Goods Sold ৳100
 ➡️ This tracks the refund and restores the stock.
 
 ### ✅ 5. Discount Given
+
 Scenario: ৳1000 service with 10% discount
 Customer pays ৳900
 
 Accounting Entry:
 
-Account	Debit	Credit
-Cash / Bank	৳900	
-Discount Allowed	৳100	
-Service Revenue		৳1000
+Account Debit Credit
+Cash / Bank ৳900
+Discount Allowed ৳100
+Service Revenue ৳1000
 
-### 6. 🔁 Loyalty Redemption 
+### 6. 🔁 Loyalty Redemption
+
 **Scenario:**
 🧍 Customer: Fatema
 She is a registered customer.
@@ -492,12 +533,14 @@ Buys services worth ৳1000.
 Redeems 100 points (1 point = ৳1).
 
 **Accounting Entry:**
+
 ```
-Account	                              	    
+Account
 Cash	                                ৳900 ->Debit
 Loyalty Points Liability Account      ৳100 ->Debit
 Sales Revenue		                                      ৳1000 ->Credit
 ```
+
 **This reflects:**
 
 - Cash received
