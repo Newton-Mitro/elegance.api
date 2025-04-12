@@ -18,6 +18,7 @@ import { PaymentModule } from './modules/payment/payment.module';
 import { SaleModule } from './modules/sale/sale.module';
 import { ProductModule } from './modules/product/product.module';
 import { BeautyServiceModule } from './modules/beauty-service/beauty-service.module';
+import { AccountingModule } from './accounting/accounting.module';
 @Module({
   imports: [
     PrismaModule,
@@ -36,6 +37,7 @@ import { BeautyServiceModule } from './modules/beauty-service/beauty-service.mod
     NotificationModule,
     VatModule,
     InvoiceModule,
+    AccountingModule,
   ],
   controllers: [AppController],
   providers: [PrismaService, SeederService],
