@@ -2,17 +2,16 @@
 
 This repository contains a complete Beauty Parlor System built with NestJS, Prisma, and SQLite/MySQL. The system manages services, products, customers, appointments, and invoicing in a beauty parlor. It supports features like service categories, customer management, payment integration, discounts, VAT management, and loyalty rewards.
 
-## Features
+## 🔧 Features
 
-- **Service Management:** Manage different services like haircuts, facials, and makeup.
-- **Product Management:** Manage various beauty products for sale.
-- **Appointment Scheduling:** Book appointments for services with status tracking.
-- **Invoice Management:** Generate invoices for services provided, supporting different payment methods.
-- **Payment Integration:** Handle customer payments and track status (Pending, Paid, etc.).
-- **Loyalty & Reward System:** Reward customers with loyalty points for services.
-- **Discounts & VAT:** Calculate VAT and apply discounts on services or products.
-- **Admin Role:** Admin can manage all entities, including users, services, products, and appointments.
-- **User Roles:** Managers, Receptionists, Stylists, and Customers have role-based access to the system.
+- **Customer Management:** Walk-in & registered customers with loyalty points
+- **Appointments & Services:** Service booking, time slots, and staff assignment
+- **Sales & Refunds:** Product sales, invoicing, and refund handling
+- **Inventory Management:** Batch tracking, expiry, purchase, sales, and adjustments
+- **Accounting System:** Full sub-ledger & general ledger journal entries
+- **Loyalty & Discounts:** Redeemable points and seasonal discounts
+- **Monthly Financial Process:** Period-end accounting and inventory closure
+- **Modular Architecture:** Domain-driven design with clean separation of modules
 
 ## Getting Started
 
@@ -86,7 +85,6 @@ npm run start:dev
 
 **2. Open the application in your browser:**
 By default, the app will run on http://localhost:3000.
-
 
 ## Technologies Used
 

@@ -12,7 +12,9 @@ datasource db {
 //   url      = env("DATABASE_URL")
 // }
 
-// Enum for user roles (admin, manager, receptionist, stylist, customer)
+// ===========================
+// 👤 USERS
+// ===========================
 enum UserRole {
   ADMIN
   MANAGER
@@ -34,9 +36,12 @@ model User {
   appointments Appointment[]
   LoyaltyPoint LoyaltyPoint[]
   Sale         Sale[]
+  Refund       Refund[]
 }
 
-// Service categories
+// ===========================
+// 🧖 SERVICE & CATEGORIES
+// ===========================
 model ServiceCategory {
   id       String    @id @default(uuid())
   name     String    @unique // e.g. "HAIR"
@@ -44,7 +49,6 @@ model ServiceCategory {
   services Service[]
 }
 
-// Service table for beauty parlor services
 model Service {
   id          String   @id @default(uuid())
   name        String   @unique
@@ -59,14 +63,16 @@ model Service {
   AppointmentService AppointmentService[]
 }
 
-// Enum for appointment status (scheduled, completed, cancelled)
+// ===========================
+// 📅 APPOINTMENTS
+// ===========================
+
 enum AppointmentStatus {
   SCHEDULED
   COMPLETED
   CANCELLED
 }
 
-// Appointment table for managing appointments
 model Appointment {
   id              String            @id @default(uuid())
   userId          String? // Nullable userId for walk-in customers
@@ -80,7 +86,6 @@ model Appointment {
   user     User?                @relation(fields: [userId], references: [id]) // Nullable user relation for walk-ins
 }
 
-// AppointmentService table to link services with appointments and store pricing at the time of booking
 model AppointmentService {
   id            String  @id @default(uuid())
   appointmentId String
@@ -91,7 +96,9 @@ model AppointmentService {
   appointment Appointment @relation(fields: [appointmentId], references: [id])
 }
 
-// Enum for invoice statuses (pending, paid, cancelled)
+// ===========================
+// 🧾 INVOICE FOR SERVICES
+// ===========================
 enum PaymentStatus {
   PENDING
   PAID
@@ -122,6 +129,63 @@ model Invoice {
   Refund      Refund[]
 }
 
+// ===========================
+// 🧴 Purchase
+// ===========================
+model Vendor {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String?
+  email     String?
+  address   String?
+  createdAt DateTime @default(now())
+
+  purchaseOrders PurchaseOrder[]
+  payments       VendorPayment[]
+}
+
+model PurchaseOrder {
+  id        String         @id @default(uuid())
+  vendorId  String
+  totalCost Decimal
+  status    PurchaseStatus @default(PENDING)
+  createdAt DateTime       @default(now())
+
+  vendor Vendor              @relation(fields: [vendorId], references: [id])
+  items  PurchaseOrderItem[]
+}
+
+enum PurchaseStatus {
+  PENDING
+  APPROVED
+  RECEIVED
+  CANCELLED
+}
+
+model PurchaseOrderItem {
+  id              String  @id @default(uuid())
+  purchaseOrderId String
+  productId       String
+  quantity        Int
+  unitPrice       Decimal
+
+  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  product       Product       @relation(fields: [productId], references: [id])
+}
+
+model VendorPayment {
+  id       String   @id @default(uuid())
+  vendorId String
+  amount   Decimal
+  method   String
+  paidAt   DateTime @default(now())
+
+  vendor Vendor @relation(fields: [vendorId], references: [id])
+}
+
+// ===========================
+// 🧴 PRODUCTS & INVENTORY
+// ===========================
 model ProductCategory {
   id       String    @id @default(uuid())
   name     String    @unique
@@ -136,14 +200,15 @@ model Product {
   stock       Int // Available stock
   categoryId  String
 
-  SaleProduct   SaleProduct[]
-  ProductStock  ProductStock[]
-  StockMovement StockMovement[]
-  category      ProductCategory @relation(fields: [categoryId], references: [id])
+  SaleProduct          SaleProduct[]
+  InventoryStock       InventoryStock[]
+  InventoryTransaction InventoryTransaction[]
+  category             ProductCategory        @relation(fields: [categoryId], references: [id])
+  RefundItem           RefundItem[]
+  PurchaseOrderItem    PurchaseOrderItem[]
 }
 
-// Product Stock (Batch-level)
-model ProductStock {
+model InventoryStock {
   id            String    @id @default(uuid())
   productId     String
   batchNumber   String?
@@ -154,31 +219,37 @@ model ProductStock {
   addedAt       DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  StockMovement StockMovement[]
-  product       Product         @relation(fields: [productId], references: [id])
+  InventoryTransaction InventoryTransaction[]
+  product              Product                @relation(fields: [productId], references: [id])
 }
 
-enum MovementType {
-  IN
-  OUT
+enum InventoryTransactionType {
+  PURCHASE
+  SALE
+  REFUND
+  ADJUSTMENT
+  EXPIRY
 }
 
-// Stock Movement (log)
-model StockMovement {
-  id        String       @id @default(uuid())
-  productId String
-  stockId   String
-  quantity  Int
-  type      MovementType // IN for purchase, OUT for sale/refund
-  reference String? // Optional: sale ID, refund ID, etc.
-  reason    String?
-  createdAt DateTime     @default(now())
+model InventoryTransaction {
+  id         String                   @id @default(uuid())
+  productId  String
+  batchCode  String?
+  type       InventoryTransactionType
+  quantity   Int
+  costPrice  Decimal
+  note       String?
+  relatedRef String? // e.g. saleId, refundId
+  createdAt  DateTime                 @default(now())
 
-  product Product      @relation(fields: [productId], references: [id])
-  stock   ProductStock @relation(fields: [stockId], references: [id])
+  product          Product         @relation(fields: [productId], references: [id])
+  InventoryStock   InventoryStock? @relation(fields: [inventoryStockId], references: [id])
+  inventoryStockId String?
 }
 
-// Sale (Transaction) model
+// ===========================
+// 🛍️ SALES
+// ===========================
 model Sale {
   id            String        @id @default(uuid())
   customerId    String?
@@ -205,24 +276,49 @@ model SaleProduct {
   product Product @relation(fields: [productId], references: [id])
 }
 
+// ===========================
+// 🔁 REFUNDS
+// ===========================
+
 enum RefundStatus {
-  PENDING
+  REQUESTED
   APPROVED
   REJECTED
+  REFUNDED
 }
 
 model Refund {
   id             String       @id @default(uuid())
+  customerId     String?
   saleId         String? // For product sale refund
   invoiceId      String? // For appointment refund
   refundedAmount Decimal
   reason         String?
-  status         RefundStatus @default(PENDING)
+  status         RefundStatus @default(REQUESTED)
   createdAt      DateTime     @default(now())
 
-  sale    Sale?    @relation(fields: [saleId], references: [id])
-  invoice Invoice? @relation(fields: [invoiceId], references: [id])
+  journalEntryId String?
+  RefundItem     RefundItem[]
+  journal        JournalEntry? @relation(fields: [journalEntryId], references: [id])
+  sale           Sale?         @relation(fields: [saleId], references: [id])
+  invoice        Invoice?      @relation(fields: [invoiceId], references: [id])
+  customer       User?         @relation(fields: [customerId], references: [id])
 }
+
+model RefundItem {
+  id        String  @id @default(uuid())
+  refundId  String
+  productId String
+  quantity  Int
+  price     Decimal
+
+  refund  Refund  @relation(fields: [refundId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+// ===========================
+// 💰 LOYALTY
+// ===========================
 
 model LoyaltyPoint {
   id        String   @id @default(uuid())
@@ -234,7 +330,9 @@ model LoyaltyPoint {
   user User @relation(fields: [userId], references: [id])
 }
 
-// Coupon Code
+// ===========================
+// 🎁 DISCOUNTS
+// ===========================
 model Discount {
   id         String   @id @default(uuid())
   code       String   @unique // Discount code (e.g., 'SUMMER20', 'MEMBER', 'NON_MEMBER', 'NEW_YEAR', 'WOMANS_DAY')
@@ -245,7 +343,9 @@ model Discount {
   createdAt  DateTime @default(now())
 }
 
-// Accounting
+// ===========================
+// 📒 ACCOUNTING SYSTEM
+// ===========================
 // Account types
 enum AccountType {
   ASSET
@@ -311,6 +411,7 @@ model JournalEntry {
   memo      String?
   createdAt DateTime @default(now())
 
-  voucher Voucher @relation(fields: [voucherId], references: [id])
-  account Account @relation(fields: [accountId], references: [id])
+  voucher Voucher  @relation(fields: [voucherId], references: [id])
+  account Account  @relation(fields: [accountId], references: [id])
+  Refund  Refund[]
 }
