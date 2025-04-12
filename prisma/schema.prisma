@@ -234,6 +234,7 @@ model LoyaltyPoint {
   user User @relation(fields: [userId], references: [id])
 }
 
+// Coupon Code
 model Discount {
   id         String   @id @default(uuid())
   code       String   @unique // Discount code (e.g., 'SUMMER20', 'MEMBER', 'NON_MEMBER', 'NEW_YEAR', 'WOMANS_DAY')
@@ -242,4 +243,74 @@ model Discount {
   endDate    DateTime // When the discount is valid until
   isActive   Boolean  @default(true)
   createdAt  DateTime @default(now())
+}
+
+// Accounting
+// Account types
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  INCOME
+  EXPENSE
+}
+
+// Chart of Accounts (like Cash, Sales, Inventory)
+model Account {
+  id             String      @id @default(uuid())
+  name           String
+  code           String      @unique
+  type           AccountType
+  parentId       String?
+  isGroup        Boolean     @default(false)
+  openingBalance Decimal     @default(0)
+  createdAt      DateTime    @default(now())
+
+  parent   Account?  @relation("AccountHierarchy", fields: [parentId], references: [id])
+  children Account[] @relation("AccountHierarchy")
+
+  entries JournalEntry[]
+}
+
+// Voucher types
+enum VoucherType {
+  PAYMENT
+  RECEIPT
+  JOURNAL
+  CONTRA
+  ADJUSTMENT
+}
+
+// Voucher status
+enum VoucherStatus {
+  PENDING
+  APPROVED
+  CANCELLED
+}
+
+// Voucher (a transaction like a payment or receipt)
+model Voucher {
+  id        String        @id @default(uuid())
+  type      VoucherType
+  status    VoucherStatus @default(PENDING)
+  date      DateTime      @default(now())
+  reference String? // Optional external ref (e.g., invoice ID)
+  narration String?
+  createdAt DateTime      @default(now())
+
+  entries JournalEntry[]
+}
+
+// Journal Entry (double-entry line: debit or credit)
+model JournalEntry {
+  id        String   @id @default(uuid())
+  voucherId String
+  accountId String
+  debit     Decimal  @default(0)
+  credit    Decimal  @default(0)
+  memo      String?
+  createdAt DateTime @default(now())
+
+  voucher Voucher @relation(fields: [voucherId], references: [id])
+  account Account @relation(fields: [accountId], references: [id])
 }

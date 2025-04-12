@@ -1,21 +1,57 @@
-## 🧩 MODULES OVERVIEW
-
-**Core Elegance**
-- **Customer Management**
-- **Services & Appointments**
-- **Product Sales**
-- **Invoices & Payments**
-- **Discounts & VAT**
-- **Loyalty & Rewards**
-- **Refunds**
-- **Inventory & Stock Management**
-- **Reports & Analytics**
-
-**Accounting**
-- **Chart Of Accounts Management**
-- **Voucher Management** Payment, Received, Journal, Contra, Purchase, Sales
-- **Process Management** (Day-end, Month-end, Year-end)
-- **Reports & Analytics** Trial Balance, Cash Flow, Profit & Loss, Balance Sheet
+## 🧩 MODULE OVERVIEW
+```
+Module--------------Description
+Auth----------------Handles login, JWT token, role-based access
+User----------------Staff & customer info (walk-in or registered), roles, profile
+ServiceCategory-----Categories like Hair, Skin, Bridal
+Service-------------Individual services (name, price, duration, description)
+Appointment---------Booking system for services (scheduled, walk-in, status tracking)
+Invoice-------------Linked to appointments, includes VAT, discounts, loyalty points, payment
+ProductCategory-----Product grouping (e.g., Hair Care, Skin Care)
+Product-------------Product catalog with price, description, stock
+Sale----------------Point-of-sale system for product sales
+SaleProduct---------Items sold per sale, quantity, price tracking
+Stock---------------Tracks product stock (purchases, sales, adjustments, expiry)
+LoyaltyPoint--------Earned/redeemed points, linked to registered users
+Discount------------Promo codes and active discount campaigns
+Voucher-------------Accounting vouchers (payment, receipt, journal, contra)
+Ledger--------------Chart of accounts (cash, bank, revenue, expense, etc.)
+JournalEntry--------Individual double-entry records (debit/credit)
+MonthEnd------------Month-wise closing, net profit calc, locked period
+Refund--------------Partial or full refunds, tied to sales or invoices
+Reports-------------Generate summaries (sales, services, income, expenses, stock)
+Notifications*------(Optional) Notify customers via SMS/email
+Scheduler-----------For monthly tasks like closing books, expiring discounts
+Settings------------System-wide settings (VAT %, loyalty settings, etc.)
+```
+### 🧱 DOMAIN STRUCTURE IDEA
+```bash
+src/
+├── auth/
+├── users/
+├── services/
+│   ├── service-categories/
+│   └── services/
+├── appointments/
+├── invoices/
+├── discounts/
+├── loyalty/
+├── products/
+│   ├── product-categories/
+│   ├── products/
+│   ├── stock/
+│   └── sales/
+├── refunds/
+├── accounting/
+│   ├── vouchers/
+│   ├── ledgers/
+│   ├── journal-entries/
+│   └── month-end/
+├── reports/
+├── notifications/
+├── scheduler/
+├── settings/
+```
 
 ## 💁‍♀️ Service Appointment Flow (Walk-in + Registered)
 
