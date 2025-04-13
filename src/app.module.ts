@@ -19,6 +19,7 @@ import { SaleModule } from './modules/sale/sale.module';
 import { ProductModule } from './modules/product/product.module';
 import { BeautyServiceModule } from './modules/beauty-service/beauty-service.module';
 import { AccountingModule } from './accounting/accounting.module';
+import { UsersController } from './users/users.controller';
 @Module({
   imports: [
     PrismaModule,
@@ -39,7 +40,7 @@ import { AccountingModule } from './accounting/accounting.module';
     InvoiceModule,
     AccountingModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, UsersController],
   providers: [PrismaService, SeederService],
 })
 export class AppModule {}
