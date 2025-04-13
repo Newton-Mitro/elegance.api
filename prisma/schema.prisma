@@ -15,28 +15,70 @@ datasource db {
 // ===========================
 // 👤 USERS
 // ===========================
-enum UserRole {
-  ADMIN
-  MANAGER
-  RECEPTIONIST
-  STYLIST
-  CUSTOMER
+// enum UserRole {
+//   ADMIN
+//   MANAGER
+//   RECEPTIONIST
+//   STYLIST
+//   CUSTOMER
+// }
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
 }
 
 // User table for both registered customers and staff (admin, manager, receptionist, etc.)
 model User {
-  id        String   @id @default(uuid())
-  name      String?
-  phone     String   @unique
-  email     String?  @unique
-  role      UserRole @default(RECEPTIONIST)
-  createdAt DateTime @default(now())
+  id                String   @id @default(uuid())
+  name              String?
+  phone             String   @unique
+  email             String?  @unique
+  profilePictureUrl String?
+  password          String
+  createdAt         DateTime @default(now())
 
   invoices     Invoice[]
   appointments Appointment[]
   LoyaltyPoint LoyaltyPoint[]
   Sale         Sale[]
   Refund       Refund[]
+  Role         Role?          @relation(fields: [roleId], references: [id])
+  roleId       String?
+  UserRoles    UserRoles[]
+  RefreshToken RefreshToken?
+}
+
+model Role {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+
+  // Relationship
+  users     User[]
+  userRoles UserRoles[]
+}
+
+model UserRoles {
+  userId String
+  roleId String
+
+  // Relationship
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId]) // Composite primary key to avoid duplicates
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  token     String   @unique
+  expiresAt DateTime
+
+  // Relationship
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // ===========================

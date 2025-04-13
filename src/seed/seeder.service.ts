@@ -2,13 +2,73 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class SeederService {
   constructor(private prisma: PrismaService) {}
 
-  async seed() {
+  async seed(): Promise<void> {
+    const roleNames = [
+      'ADMIN',
+      'MANAGER',
+      'RECEPTIONIST',
+      'STYLIST',
+      'CUSTOMER',
+    ];
+
+    // 1. Seed all roles
+    const roles: Role[] = await Promise.all(
+      roleNames.map((roleName) => {
+        return this.prisma.role.upsert({
+          where: { name: roleName },
+          update: {},
+          create: {
+            name: roleName,
+          },
+        }) as Promise<Role>;
+      }),
+    );
+
+    // 2. Find ADMIN role
+    const adminRole = roles.find((r) => r.name === 'ADMIN');
+    if (!adminRole) throw new Error('ADMIN role not found');
+
+    // 3. Create Superadmin User
+    const phone = '01700000000';
+    const email = 'superadmin@example.com';
+    const password = 'SuperSecret123';
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const superAdminUser = await this.prisma.user.upsert({
+      where: { phone },
+      update: {},
+      create: {
+        name: 'Super Admin',
+        phone,
+        email,
+        password: hashedPassword,
+        profilePictureUrl: null,
+      },
+    });
+
+    // 4. Assign ADMIN role to the user via UserRoles
+    await this.prisma.userRoles.upsert({
+      where: {
+        userId_roleId: {
+          userId: superAdminUser.id,
+          roleId: adminRole.id,
+        },
+      },
+      update: {},
+      create: {
+        userId: superAdminUser.id,
+        roleId: adminRole.id,
+      },
+    });
+
     // 1. Service Categories
     const serviceCategories = [
       { name: 'Hair', nameBn: 'চুল' },
@@ -229,14 +289,14 @@ export class SeederService {
       {
         name: 'L’Oreal Hair Color',
         price: 1200,
-        quantity: 10,
+        stock: 10,
         description: 'Vibrant professional hair color',
         category: 'Hair Products',
       },
       {
         name: 'Matrix Shampoo',
         price: 800,
-        quantity: 20,
+        stock: 20,
         description: 'Smoothening shampoo',
         category: 'Hair Products',
       },
@@ -245,14 +305,14 @@ export class SeederService {
       {
         name: 'O3+ Facial Kit',
         price: 1500,
-        quantity: 15,
+        stock: 15,
         description: 'Facial cleanser and mask',
         category: 'Skin Products',
       },
       {
         name: 'VLCC Bleach',
         price: 500,
-        quantity: 25,
+        stock: 25,
         description: 'Skin bleach cream',
         category: 'Skin Products',
       },
@@ -261,14 +321,14 @@ export class SeederService {
       {
         name: 'Lakme Foundation',
         price: 1000,
-        quantity: 30,
+        stock: 30,
         description: 'Smooth finish foundation',
         category: 'Makeup Products',
       },
       {
         name: 'Maybelline Lipstick',
         price: 750,
-        quantity: 40,
+        stock: 40,
         description: 'Moisturizing lipstick',
         category: 'Makeup Products',
       },
@@ -277,7 +337,7 @@ export class SeederService {
       {
         name: 'Nail Polish Set',
         price: 400,
-        quantity: 50,
+        stock: 50,
         description: 'Colorful nail polish',
         category: 'Nail Products',
       },
@@ -291,7 +351,7 @@ export class SeederService {
           name: product.name,
           description: product.description,
           price: product.price,
-          quantity: product.quantity,
+          stock: product.stock,
           categoryId: productCategoryMap[product.category],
         },
       });
