@@ -48,6 +48,7 @@ model User {
   roleId       String?
   UserRoles    UserRoles[]
   RefreshToken RefreshToken?
+  AuditLog     AuditLog[]
 }
 
 model Role {
@@ -456,4 +457,36 @@ model JournalEntry {
   voucher Voucher  @relation(fields: [voucherId], references: [id])
   account Account  @relation(fields: [accountId], references: [id])
   Refund  Refund[]
+}
+
+// ++++++++++++++++++++++++++++++++++++++++++++
+// Audit Log
+// ++++++++++++++++++++++++++++++++++++++++++++
+
+enum ActionStatus {
+  SUCCESS
+  FAILED
+}
+
+enum ActionType {
+  CREATE
+  UPDATE
+  DELETE
+  VIEW
+  REPORT_VIEW
+}
+
+model AuditLog {
+  id                String       @id @default(uuid())
+  actionType        ActionType
+  entityType        String?
+  entityId          String?
+  actionTakenBy     String
+  actionDescription String
+  ipAddress         String?
+  actionStatus      ActionStatus @default(FAILED)
+  actionDate        DateTime     @default(now())
+
+  // Relationship
+  user User @relation(fields: [actionTakenBy], references: [id])
 }

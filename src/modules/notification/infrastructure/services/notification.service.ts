@@ -1,6 +1,6 @@
 import { NotificationType } from '../../application/types/notification-type.enum';
 import { NotificationAttachment } from '../../domain/services/notification.service';
-import { NodemailerEmailService } from './nodemailer-email-service';
+import { NodemailerEmailService } from './nodemailer-email.service';
 import { SmsService } from './sms.service';
 import { WhatsAppService } from './whatsapp.service';
 
@@ -31,10 +31,10 @@ export class NotificationService {
         await this.emailService.send({ to, subject, body, attachments });
         break;
       case NotificationType.SMS:
-        await this.smsService.send(to, subject, body);
+        await this.smsService.send({ to, subject, body });
         break;
       case NotificationType.WHATSAPP:
-        await this.whatsAppService.send(to, subject, body);
+        await this.whatsAppService.send({ to, subject, body });
         break;
       default:
         throw new Error(`Unknown notification type: ${type as string}`);

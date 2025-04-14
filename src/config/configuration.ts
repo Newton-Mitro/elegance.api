@@ -31,6 +31,14 @@ export default () => ({
     password: process.env.EMAIL_PASSWORD || 'your-email-password',
   },
 
+  // SMS Configuration
+  sms: {
+    apiUrl: process.env.SMS_API_URL,
+    apiKey: process.env.SMS_API_KEY,
+    apiSecret: process.env.SMS_API_SECRET,
+    senderId: process.env.SMS_SENDER_ID,
+  },
+
   // Logging Configuration
   logLevel: process.env.LOG_LEVEL || 'info', // Options: "debug", "info", "warn", "error"
 
@@ -52,5 +60,10 @@ export default () => ({
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT || '6379', 10),
     password: process.env.REDIS_PASSWORD || 'default-redis-password',
+  },
+
+  whatsapp: {
+    phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID,
+    accessToken: process.env.WHATSAPP_ACCESS_TOKEN,
   },
 });

@@ -1,19 +1,53 @@
-// whatsapp.service.ts
-import { NotificationService } from './notification.service.interface';
-import twilio from 'twilio';
+import { ConfigService } from '@nestjs/config';
+import { Injectable, Logger } from '@nestjs/common';
+import axios from 'axios';
+import {
+  NotificationService,
+  SendNotificationOptions,
+} from '../../domain/services/notification.service';
+import { WhatsappConfig } from '../../../../config/types/config.type';
 
+@Injectable()
 export class WhatsAppService implements NotificationService {
-  private client: twilio.Twilio;
+  private readonly logger = new Logger(WhatsAppService.name);
+  private readonly apiUrl: string;
+  private readonly accessToken: string;
 
-  constructor() {
-    this.client = twilio('TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN');
+  constructor(private readonly configService: ConfigService) {
+    const whatsAppConfig = this.configService.get<WhatsappConfig>('whatsapp')!;
+    this.accessToken = whatsAppConfig?.accessToken;
+
+    this.apiUrl = `https://graph.facebook.com/v19.0/${whatsAppConfig?.phoneNumberId}/messages`;
   }
 
-  async send(to: string, subject: string, body: string): Promise<void> {
-    await this.client.messages.create({
-      body,
-      from: 'whatsapp:+14155238886', // This is the Twilio WhatsApp sandbox number
-      to: `whatsapp:${to}`, // To WhatsApp number
-    });
+  async send({ to, subject, body }: SendNotificationOptions): Promise<void> {
+    try {
+      const fullMessage = subject ? `${subject}: ${body}` : body;
+
+      await axios.post(
+        this.apiUrl,
+        {
+          messaging_product: 'whatsapp',
+          to,
+          type: 'text',
+          text: { body: fullMessage },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      this.logger.log(`WhatsApp message sent to ${to}`);
+    } catch (error) {
+      this.logger.error(
+        'Failed to send WhatsApp message',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        error?.response?.data || error,
+      );
+      throw new Error('WhatsApp message sending failed');
+    }
   }
 }

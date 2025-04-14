@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 
 import nodemailer, { Transporter } from 'nodemailer';
-import { EmailConfig } from '../../../../config/types/email.config';
+import { EmailConfig } from '../../../../config/types/config.type';
 import {
   NotificationService,
   SendNotificationOptions,
