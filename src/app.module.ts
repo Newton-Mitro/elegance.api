@@ -21,6 +21,7 @@ import { VatModule } from './modules/vat/vat.module';
 import { PrismaService } from './prisma/prisma.service';
 import { SeederService } from './seed/seeder.service';
 import { ConfigModule } from '@nestjs/config';
+import { AuditLogModule } from './audit-log/audit-log.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -47,6 +48,7 @@ import configuration from './config/configuration';
       envFilePath: ['.env', '.env.development.local', '.env.production'],
       load: [configuration],
     }),
+    AuditLogModule,
   ],
   controllers: [AppController, UsersController],
   providers: [PrismaService, SeederService],
