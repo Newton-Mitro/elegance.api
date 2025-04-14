@@ -16,7 +16,6 @@ import { InvoiceModule } from './modules/invoice/invoice.module';
 import { LoyaltyModule } from './modules/loyalty/loyalty.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { ProductCategoryModule } from './modules/product-category/product-category.module';
-import { UsersController } from './modules/users/users.controller';
 import { VatModule } from './modules/vat/vat.module';
 import { PrismaService } from './prisma/prisma.service';
 import { SeederService } from './seed/seeder.service';
@@ -50,7 +49,7 @@ import { AuditLogModule } from './modules/audit-log/audit-log.module';
       load: [configuration],
     }),
   ],
-  controllers: [AppController, UsersController],
+  controllers: [AppController],
   providers: [PrismaService, SeederService],
 })
 export class AppModule {}
