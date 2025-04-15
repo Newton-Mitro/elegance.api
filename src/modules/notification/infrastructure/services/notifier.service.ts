@@ -4,7 +4,7 @@ import { NodemailerEmailService } from './nodemailer-email.service';
 import { SmsService } from './sms.service';
 import { WhatsAppService } from './whatsapp.service';
 
-export class NotificationService {
+export class NotifierService {
   private emailService: NodemailerEmailService;
   private smsService: SmsService;
   private whatsAppService: WhatsAppService;

@@ -1,9 +1,10 @@
+import { Role } from '@prisma/client';
 import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
 import { RoleEntity } from '../../domain/entities/role.entity';
 
-export class RoleMapper {
-  static toDomain(raw: any): RoleEntity {
-    return new RoleEntity(
+export class RoleEntityMapper {
+  static toDomain(raw: Role): RoleEntity {
+    return RoleEntity.create(
       {
         name: raw.name,
         description: raw.description ?? undefined,
@@ -12,11 +13,11 @@ export class RoleMapper {
     );
   }
 
-  static toPersistence(role: RoleEntity): any {
+  static toPersistence(role: RoleEntity): Role {
     return {
       id: role.id.toString(),
-      name: role.props.name,
-      description: role.props.description ?? null,
+      name: role.name,
+      description: role.description ?? null,
     };
   }
 }

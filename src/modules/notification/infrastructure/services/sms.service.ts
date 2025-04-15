@@ -6,6 +6,8 @@ import {
   SendNotificationOptions,
 } from '../../domain/services/notification.service';
 import { SmsConfig } from '../../../../config/types/config.type';
+import fs from 'fs';
+import path from 'path';
 
 @Injectable()
 export class SmsService implements NotificationService {
@@ -17,13 +19,34 @@ export class SmsService implements NotificationService {
 
   constructor(private readonly configService: ConfigService) {
     const smsConfig = this.configService.get<SmsConfig>('sms')!;
-    this.apiUrl = smsConfig?.apiUrl;
-    this.apiKey = smsConfig?.apiKey;
-    this.apiSecret = smsConfig?.apiSecret;
-    this.senderId = smsConfig?.senderId;
+    this.apiUrl = smsConfig.apiUrl;
+    this.apiKey = smsConfig.apiKey;
+    this.apiSecret = smsConfig.apiSecret;
+    this.senderId = smsConfig.senderId;
   }
 
   async send({ to, body }: SendNotificationOptions): Promise<void> {
+    if (this.apiUrl === 'log') {
+      const logDir = path.resolve(process.cwd(), 'sms');
+      if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir, { recursive: true });
+      }
+
+      const fileName = `${Date.now()}-${to.replace(/\D/g, '')}.txt`;
+      const filePath = path.join(logDir, fileName);
+
+      const content = [
+        `To: ${to}`,
+        `------------------`,
+        `Body:\n\n${body}`,
+        `------------------`,
+      ].join('\n\n');
+
+      fs.writeFileSync(filePath, content.trim());
+      this.logger.log(`📄 SMS content logged to ${filePath}`);
+      return;
+    }
+
     try {
       const payload = {
         api_key: this.apiKey,
@@ -39,10 +62,10 @@ export class SmsService implements NotificationService {
         },
       });
 
-      this.logger.log(`SMS sent to ${to}`);
+      this.logger.log(`📱 SMS sent to ${to}`);
     } catch (error) {
       this.logger.error(
-        `Failed to send SMS to ${to}`,
+        `❌ Failed to send SMS to ${to}`,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         error?.response?.data || error.message,
       );

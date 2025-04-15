@@ -1,7 +1,7 @@
-import { Entity } from '../../../../core/entities/entity';
+import { Entity, EntityBaseProps } from '../../../../core/entities/entity';
 import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
 
-interface RoleProps {
+interface RoleProps extends EntityBaseProps {
   name: string;
   description?: string;
 }

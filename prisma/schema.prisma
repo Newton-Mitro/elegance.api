@@ -40,14 +40,14 @@ model User {
   createdAt         DateTime   @default(now())
 
   // Relationships
-  invoices     Invoice[]
-  appointments Appointment[]
-  LoyaltyPoint LoyaltyPoint[]
-  Sale         Sale[]
-  Refund       Refund[]
-  refreshToken RefreshToken?
-  auditLogs    AuditLog[]
-  userRoles    UserRoles[] // Many-to-many via UserRoles
+  invoices      Invoice[]
+  appointments  Appointment[]
+  loyaltyPoints LoyaltyPoint[]
+  sales         Sale[]
+  refunds       Refund[]
+  refreshToken  RefreshToken?
+  auditLogs     AuditLog[]
+  roles         UserRoles[] // Many-to-many via UserRoles
 }
 
 model Role {
@@ -56,12 +56,20 @@ model Role {
   description String?
 
   // Relationships
-  userRoles UserRoles[] // Many-to-many via UserRoles
+  roles UserRoles[] // Many-to-many via UserRoles
 }
 
 model UserRoles {
   userId String
   roleId String
+
+  // Audit Trail Fields
+  assignedAt DateTime @default(now())
+  assignedBy String // The ID of the admin or user who assigned the role
+
+  revokedAt DateTime? // Nullable: if revoked
+  revokedBy String? // Nullable: if revoked
+  reason    String? // Optional reason for assignment or revocation
 
   // Relationships
   user User @relation(fields: [userId], references: [id])
@@ -100,8 +108,8 @@ model Service {
   durationMin Int
   createdAt   DateTime @default(now())
 
-  category           ServiceCategory      @relation(fields: [categoryId], references: [id])
-  AppointmentService AppointmentService[]
+  appointmentServices AppointmentService[]
+  category            ServiceCategory      @relation(fields: [categoryId], references: [id])
 }
 
 // ===========================
@@ -165,9 +173,9 @@ model Invoice {
   vatPercentage Float
   vatAmount     Decimal
 
+  refunds     Refund[]
   user        User?       @relation(fields: [userId], references: [id])
   appointment Appointment @relation(fields: [appointmentId], references: [id])
-  Refund      Refund[]
 }
 
 // ===========================
@@ -241,12 +249,12 @@ model Product {
   stock       Int // Available stock
   categoryId  String
 
-  SaleProduct          SaleProduct[]
-  InventoryStock       InventoryStock[]
-  InventoryTransaction InventoryTransaction[]
-  category             ProductCategory        @relation(fields: [categoryId], references: [id])
-  RefundItem           RefundItem[]
-  PurchaseOrderItem    PurchaseOrderItem[]
+  saleProducts          SaleProduct[]
+  inventoryStocks       InventoryStock[]
+  inventoryTransactions InventoryTransaction[]
+  refundItems           RefundItem[]
+  purchaseOrderItems    PurchaseOrderItem[]
+  category              ProductCategory        @relation(fields: [categoryId], references: [id])
 }
 
 model InventoryStock {
@@ -260,8 +268,8 @@ model InventoryStock {
   addedAt       DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  InventoryTransaction InventoryTransaction[]
-  product              Product                @relation(fields: [productId], references: [id])
+  inventoryTransactions InventoryTransaction[]
+  product               Product                @relation(fields: [productId], references: [id])
 }
 
 enum InventoryTransactionType {
@@ -273,19 +281,19 @@ enum InventoryTransactionType {
 }
 
 model InventoryTransaction {
-  id         String                   @id @default(uuid())
-  productId  String
-  batchCode  String?
-  type       InventoryTransactionType
-  quantity   Int
-  costPrice  Decimal
-  note       String?
-  relatedRef String? // e.g. saleId, refundId
-  createdAt  DateTime                 @default(now())
-
-  product          Product         @relation(fields: [productId], references: [id])
-  InventoryStock   InventoryStock? @relation(fields: [inventoryStockId], references: [id])
+  id               String                   @id @default(uuid())
+  productId        String
+  batchCode        String?
+  type             InventoryTransactionType
+  quantity         Int
+  costPrice        Decimal
+  note             String?
+  relatedRef       String? // e.g. saleId, refundId
   inventoryStockId String?
+  createdAt        DateTime                 @default(now())
+
+  product        Product         @relation(fields: [productId], references: [id])
+  inventoryStock InventoryStock? @relation(fields: [inventoryStockId], references: [id])
 }
 
 // ===========================
@@ -301,8 +309,8 @@ model Sale {
   updatedAt     DateTime      @updatedAt
 
   products SaleProduct[] // Products involved in the sale
+  refunds  Refund[]
   customer User?         @relation(fields: [customerId], references: [id])
-  Refund   Refund[]
 }
 
 // SaleProduct model (for many-to-many relationship with product)
@@ -337,13 +345,13 @@ model Refund {
   reason         String?
   status         RefundStatus @default(REQUESTED)
   createdAt      DateTime     @default(now())
-
   journalEntryId String?
-  RefundItem     RefundItem[]
-  journal        JournalEntry? @relation(fields: [journalEntryId], references: [id])
-  sale           Sale?         @relation(fields: [saleId], references: [id])
-  invoice        Invoice?      @relation(fields: [invoiceId], references: [id])
-  customer       User?         @relation(fields: [customerId], references: [id])
+
+  refundItems RefundItem[]
+  journal     JournalEntry? @relation(fields: [journalEntryId], references: [id])
+  sale        Sale?         @relation(fields: [saleId], references: [id])
+  invoice     Invoice?      @relation(fields: [invoiceId], references: [id])
+  customer    User?         @relation(fields: [customerId], references: [id])
 }
 
 model RefundItem {
@@ -407,10 +415,9 @@ model Account {
   openingBalance Decimal     @default(0)
   createdAt      DateTime    @default(now())
 
-  parent   Account?  @relation("AccountHierarchy", fields: [parentId], references: [id])
-  children Account[] @relation("AccountHierarchy")
-
-  entries JournalEntry[]
+  entries  JournalEntry[]
+  parent   Account?       @relation("AccountHierarchy", fields: [parentId], references: [id])
+  children Account[]      @relation("AccountHierarchy")
 }
 
 // Voucher types
@@ -452,9 +459,9 @@ model JournalEntry {
   memo      String?
   createdAt DateTime @default(now())
 
+  refunds Refund[]
   voucher Voucher  @relation(fields: [voucherId], references: [id])
   account Account  @relation(fields: [accountId], references: [id])
-  Refund  Refund[]
 }
 
 // ++++++++++++++++++++++++++++++++++++++++++++
