@@ -1,12 +1,7 @@
+import { UserStatus } from '@prisma/client';
 import { Entity, EntityBaseProps } from '../../../../core/entities/entity';
 import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
 import { Email } from '../value-objects/email.vo';
-
-export enum UserStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  SUSPENDED = 'SUSPENDED',
-}
 
 interface UserProps extends EntityBaseProps {
   name?: string;

@@ -10,8 +10,8 @@ import fs from 'fs';
 import path from 'path';
 
 @Injectable()
-export class SmsService implements NotificationService {
-  private readonly logger = new Logger(SmsService.name);
+export class GrameenPhoneSmsService implements NotificationService {
+  private readonly logger = new Logger(GrameenPhoneSmsService.name);
   private readonly apiUrl: string;
   private readonly apiKey: string;
   private readonly apiSecret: string;

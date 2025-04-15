@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
 import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
-import { UserEntity, UserStatus } from '../../domain/entities/user.entity';
+import { UserEntity } from '../../domain/entities/user.entity';
 import { Email } from '../../domain/value-objects/email.vo';
 
 export class UserEntityMapper {
@@ -12,7 +12,7 @@ export class UserEntityMapper {
         email: raw.email ? Email.create(raw.email) : undefined,
         profilePictureUrl: raw.profilePictureUrl ?? undefined,
         password: raw.password,
-        status: raw.status as UserStatus,
+        status: raw.status,
 
         createdAt: raw.createdAt,
       },

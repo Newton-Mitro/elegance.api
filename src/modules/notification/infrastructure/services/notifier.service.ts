@@ -1,17 +1,17 @@
 import { NotificationType } from '../../application/types/notification-type.enum';
 import { SendNotificationOptions } from '../../domain/services/notification.service';
 import { NodemailerEmailService } from './nodemailer-email.service';
-import { SmsService } from './sms.service';
+import { GrameenPhoneSmsService } from './grameenphone.sms.service';
 import { WhatsAppService } from './whatsapp.service';
 
 export class NotifierService {
   private emailService: NodemailerEmailService;
-  private smsService: SmsService;
+  private smsService: GrameenPhoneSmsService;
   private whatsAppService: WhatsAppService;
 
   constructor(
     emailService: NodemailerEmailService,
-    smsService: SmsService,
+    smsService: GrameenPhoneSmsService,
     whatsAppService: WhatsAppService,
   ) {
     this.emailService = emailService;
