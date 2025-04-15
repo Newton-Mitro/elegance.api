@@ -1,5 +1,5 @@
 import { NotificationType } from '../../application/types/notification-type.enum';
-import { NotificationAttachment } from '../../domain/services/notification.service';
+import { SendNotificationOptions } from '../../domain/services/notification.service';
 import { NodemailerEmailService } from './nodemailer-email.service';
 import { SmsService } from './sms.service';
 import { WhatsAppService } from './whatsapp.service';
@@ -20,12 +20,9 @@ export class NotifierService {
   }
 
   async sendNotification(
-    type: NotificationType,
-    to: string,
-    subject: string,
-    body: string,
-    attachments?: NotificationAttachment[],
+    options: SendNotificationOptions & { type: NotificationType },
   ): Promise<void> {
+    const { type, to, subject, body, attachments } = options;
     switch (type) {
       case NotificationType.EMAIL:
         await this.emailService.send({ to, subject, body, attachments });

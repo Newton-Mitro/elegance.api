@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
@@ -51,10 +48,11 @@ export class SeederService {
         email,
         password: hashedPassword,
         profilePictureUrl: null,
+        status: 'ACTIVE',
       },
     });
 
-    // 4. Assign ADMIN role to the user via UserRoles
+    // 4. Assign ADMIN role via UserRoles with audit trail fields
     await this.prisma.userRoles.upsert({
       where: {
         userId_roleId: {
@@ -66,6 +64,9 @@ export class SeederService {
       create: {
         userId: superAdminUser.id,
         roleId: adminRole.id,
+        assignedAt: new Date(),
+        assignedBy: superAdminUser.id, // Assigned by themselves (initial setup)
+        reason: 'Initial Super Admin setup',
       },
     });
 
