@@ -4,6 +4,7 @@ import { IJwtService } from '../../domain/interfaces/jwt-service.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtConfig } from '../../../../config/types/config.type';
+import { UserEntity } from '../../../user/domain/entities/user.entity';
 
 @Injectable()
 export class JwtRefreshTokenStrategy implements IJwtService {
@@ -29,7 +30,7 @@ export class JwtRefreshTokenStrategy implements IJwtService {
     }
   }
 
-  async verify(token: string): Promise<any> {
+  async verify(token: string): Promise<UserEntity> {
     try {
       const jwt = this.configService.get<JwtConfig>('jwt')!;
       return this.jwtService.verifyAsync(token, {

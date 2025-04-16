@@ -1,43 +1,38 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { PasswordHasherService } from '../../domain/services/password-hasher.service';
-import { IJwtService } from '../../domain/interfaces/jwt-service.interface';
 import { LoginDto } from '../dtos/login.dto';
+import { JwtAccessTokenStrategy } from '../../infrastructure/strategies/jwt-access-token.strategy';
+import { JwtRefreshTokenStrategy } from '../../infrastructure/strategies/jwt-refresh-token.strategy';
 
 @Injectable()
 export class LoginUseCase {
   constructor(
     private readonly IUserRepository: IUserRepository,
-    private readonly jwtService: IJwtService,
-    private readonly hasher: PasswordHasherService,
+    private readonly jwtAccessTokenStrategy: JwtAccessTokenStrategy,
+    private readonly jwtRefreshTokenStrategy: JwtRefreshTokenStrategy,
+    private readonly passwordHasherService: PasswordHasherService,
   ) {}
 
   async execute(dto: LoginDto): Promise<any> {
-    const user = await this.IUserRepository.findByEmail(dto.email);
+    const user = await this.IUserRepository.findByPhone(dto.email);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const passwordValid = await this.hashService.compare(
+    const passwordValid = await this.passwordHasherService.compare(
       dto.password,
       user.password,
     );
+
     if (!passwordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { sub: user.id, email: user.email };
-    const jwt = this.configService.get('jwt');
+    const payload = user;
 
-    const accessToken = await this.jwtService.signAsync(payload, {
-      secret: jwt.secret,
-      expiresIn: jwt.exp,
-    });
-
-    const refreshToken = await this.jwtService.signAsync(payload, {
-      secret: jwt.refSecret,
-      expiresIn: jwt.refExp,
-    });
+    const accessToken = await this.jwtAccessTokenStrategy.sign(payload);
+    const refreshToken = await this.jwtRefreshTokenStrategy.sign(payload);
 
     return { accessToken, refreshToken, user };
   }

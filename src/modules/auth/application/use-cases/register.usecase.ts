@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { RegisterDto } from '../dtos/register.dto';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
-import { IJwtService } from '../../domain/interfaces/jwt-service.interface';
 import { PasswordHasherService } from '../../domain/services/password-hasher.service';
 import { UserEntity } from '../../../user/domain/entities/user.entity';
 import { UserStatus } from '@prisma/client';
+import { JwtAccessTokenStrategy } from '../../infrastructure/strategies/jwt-access-token.strategy';
 
 @Injectable()
 export class RegisterUseCase {
   constructor(
     private readonly userRepo: IUserRepository,
-    private readonly jwtService: IJwtService,
+    private readonly jwtAccessTokenStrategy: JwtAccessTokenStrategy,
     private readonly hasher: PasswordHasherService,
   ) {}
 
@@ -27,7 +27,7 @@ export class RegisterUseCase {
 
     await this.userRepo.save(newUser);
 
-    const token = await this.jwtService.sign({ userId: newUser.id });
+    const token = await this.jwtAccessTokenStrategy.sign(newUser);
 
     return {
       accessToken: token,

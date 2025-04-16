@@ -1,37 +1,32 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { RefreshTokenDto } from '../dtos/refresh-token.dto';
+import { JwtRefreshTokenStrategy } from '../../infrastructure/strategies/jwt-refresh-token.strategy';
 
 @Injectable()
 export class RefreshTokenUseCase {
   constructor(
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
+    private readonly jwtRefreshTokenStrategy: JwtRefreshTokenStrategy,
     private readonly IUserRepository: IUserRepository,
   ) {}
 
   async execute(dto: RefreshTokenDto): Promise<any> {
-    const jwt = this.configService.get('jwt');
-
     try {
-      const decoded = await this.jwtService.verifyAsync(dto.refreshToken, {
-        secret: jwt.refSecret,
-      });
+      const decodedUser = await this.jwtRefreshTokenStrategy.verify(
+        dto.refreshToken,
+      );
 
-      const user = await this.IUserRepository.findById(decoded.sub);
+      const user = await this.IUserRepository.findById(decodedUser.id);
       if (!user) {
         throw new UnauthorizedException();
       }
 
-      const payload = { sub: user.id, email: user.email };
+      const payload = decodedUser;
 
-      const newAccessToken = await this.jwtService.signAsync(payload, {
-        secret: jwt.secret,
-        expiresIn: jwt.exp,
-      });
+      const newAccessToken = await this.jwtRefreshTokenStrategy.sign(payload);
 
       return { accessToken: newAccessToken };
-    } catch (err) {
+    } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
