@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RegisterDto } from '../dtos/register.dto';
-import { UserRepository } from '../../../user/domain/repositories/user.repository';
+import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { IJwtService } from '../../domain/interfaces/jwt-service.interface';
 import { PasswordHasherService } from '../../domain/services/password-hasher.service';
 import { UserEntity } from '../../../user/domain/entities/user.entity';
@@ -9,7 +9,7 @@ import { UserStatus } from '@prisma/client';
 @Injectable()
 export class RegisterUseCase {
   constructor(
-    private readonly userRepo: UserRepository,
+    private readonly userRepo: IUserRepository,
     private readonly jwtService: IJwtService,
     private readonly hasher: PasswordHasherService,
   ) {}

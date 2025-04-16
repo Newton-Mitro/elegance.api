@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserRepository } from '../../../user/domain/repositories/user.repository';
+import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { RefreshTokenDto } from '../dtos/refresh-token.dto';
 
 @Injectable()
@@ -7,7 +7,7 @@ export class RefreshTokenUseCase {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly userRepository: UserRepository,
+    private readonly IUserRepository: IUserRepository,
   ) {}
 
   async execute(dto: RefreshTokenDto): Promise<any> {
@@ -18,7 +18,7 @@ export class RefreshTokenUseCase {
         secret: jwt.refSecret,
       });
 
-      const user = await this.userRepository.findById(decoded.sub);
+      const user = await this.IUserRepository.findById(decoded.sub);
       if (!user) {
         throw new UnauthorizedException();
       }

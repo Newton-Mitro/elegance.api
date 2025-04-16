@@ -1,7 +1,7 @@
-import { UserResponseDto } from '../../modules/user/application/dtos/user-response.dto';
+import { UserAggregateDto } from '../../modules/user/application/dtos/user-aggregate.dto';
 
 declare module 'express' {
   interface Request {
-    user?: UserResponseDto;
+    user?: UserAggregateDto;
   }
 }

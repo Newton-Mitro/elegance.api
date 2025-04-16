@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from '../../../user/domain/repositories/user.repository';
+import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { ResetPasswordDto } from '../dtos/reset-password.dto';
 import { PasswordHasherService } from '../../domain/services/password-hasher.service';
 
 @Injectable()
 export class ResetPasswordUseCase {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly IUserRepository: IUserRepository,
     private readonly tokenService: TokenService,
     private readonly passwordHasherService: PasswordHasherService,
   ) {}
@@ -17,7 +17,7 @@ export class ResetPasswordUseCase {
     const hashedPassword = await this.passwordHasherService.hash(
       dto.newPassword,
     );
-    await this.userRepository.updatePassword(userId, hashedPassword);
+    await this.IUserRepository.updatePassword(userId, hashedPassword);
 
     return { message: 'Password successfully reset' };
   }

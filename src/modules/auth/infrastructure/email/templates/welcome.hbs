@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <style>
+      @media only screen and (max-width: 600px) {
+        .container {
+          padding: 10px !important;
+        }
+        .button {
+          width: 100% !important;
+          box-sizing: border-box;
+        }
+      }
+    </style>
+  </head>
+  <body
+    style='font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 0;'
+  >
+    <div
+      class='container'
+      style='max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px;'
+    >
+      <h2 style='color: #333;'>Welcome to Our Platform, {{name}}! 🎉</h2>
+      <p style='color: #555;'>
+        We're excited to have you on board. You can now explore everything our
+        app has to offer.
+      </p>
+      <p style='color: #555;'>To get started, log in to your dashboard:</p>
+      <p style='text-align: center;'>
+        <a
+          href='{{loginUrl}}'
+          class='button'
+          style='display: inline-block; background-color: #007BFF; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; margin: 10px 0;'
+        >
+          Go to Dashboard
+        </a>
+      </p>
+      <p style='color: #777; font-size: 14px;'>
+        If you have any questions, feel free to reply to this email. We’re here
+        to help!
+      </p>
+      <p style='color: #777;'>Cheers,<br />The Support Team</p>
+    </div>
+  </body>
+</html>

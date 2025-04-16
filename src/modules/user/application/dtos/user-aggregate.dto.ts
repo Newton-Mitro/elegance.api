@@ -1,6 +1,12 @@
 import { UserStatus } from '@prisma/client';
 
-export class UserResponseDto {
+export class RoleDto {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+export class UserAggregateDto {
   id: string;
   name: string | null;
   phone: string;
@@ -8,4 +14,6 @@ export class UserResponseDto {
   profilePictureUrl: string | null;
   status: UserStatus;
   createdAt: Date;
+  updatedAt: Date;
+  roles: RoleDto[];
 }
