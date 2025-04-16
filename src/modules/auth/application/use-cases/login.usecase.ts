@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { PasswordHasherService } from '../../domain/services/password-hasher.service';
 import { LoginDto } from '../dtos/login.dto';
@@ -8,14 +8,15 @@ import { JwtRefreshTokenStrategy } from '../../infrastructure/strategies/jwt-ref
 @Injectable()
 export class LoginUseCase {
   constructor(
-    private readonly IUserRepository: IUserRepository,
+    @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository,
     private readonly jwtAccessTokenStrategy: JwtAccessTokenStrategy,
     private readonly jwtRefreshTokenStrategy: JwtRefreshTokenStrategy,
     private readonly passwordHasherService: PasswordHasherService,
   ) {}
 
   async execute(dto: LoginDto): Promise<any> {
-    const user = await this.IUserRepository.findByPhone(dto.email);
+    const user = await this.userRepository.findByPhone(dto.email);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }

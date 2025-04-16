@@ -1,21 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
-import { NotificationService } from '../../../notification/domain/services/notification.service';
 import { ForgotPasswordDto } from '../dtos/forgot-password.dto';
-import { ResetTokenRepository } from '../../infrastructure/repositories/prisma-reset-token.repository';
 import { ResetTokenEntity } from '../../domain/entities/reset-token.entity';
 import { TemplateEngine } from '../../../../core/email/template.engine';
+import { IResetTokenRepository } from '../../domain/interfaces/reset-token.repository';
+import { NotifierService } from '../../../notification/infrastructure/services/notifier.service';
+import { NotificationType } from '../../../notification/application/types/notification-type.enum';
 
 @Injectable()
 export class ForgotPasswordUseCase {
   constructor(
-    private readonly IUserRepository: IUserRepository,
-    private readonly notificationService: NotificationService, // abstracted email sender
-    private readonly resetTokenRepository: ResetTokenRepository, // for creating/validating tokens
+    @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository,
+    private readonly notifierService: NotifierService, // abstracted email sender
+    @Inject('IResetTokenRepository')
+    private readonly resetTokenRepository: IResetTokenRepository, // for creating/validating tokens
   ) {}
 
   async execute(dto: ForgotPasswordDto): Promise<any> {
-    const user = await this.IUserRepository.findByPhone(dto.email);
+    const user = await this.userRepository.findByPhone(dto.email);
     if (!user) {
       // Don't reveal if phone number exists
       return {
@@ -37,10 +40,11 @@ export class ForgotPasswordUseCase {
     });
 
     if (user.email) {
-      await this.notificationService.send({
+      await this.notifierService.sendNotification({
         to: user.email.value,
         subject: 'Forgot Password Token',
         body: html,
+        type: NotificationType.EMAIL,
       });
     }
 

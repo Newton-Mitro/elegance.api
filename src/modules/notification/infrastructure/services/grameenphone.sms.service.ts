@@ -2,15 +2,15 @@ import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import {
-  NotificationService,
-  SendNotificationOptions,
+  INotificationService,
+  ISendNotificationOptions,
 } from '../../domain/services/notification.service';
 import { SmsConfig } from '../../../../config/types/config.type';
 import fs from 'fs';
 import path from 'path';
 
 @Injectable()
-export class GrameenPhoneSmsService implements NotificationService {
+export class GrameenPhoneSmsService implements INotificationService {
   private readonly logger = new Logger(GrameenPhoneSmsService.name);
   private readonly apiUrl: string;
   private readonly apiKey: string;
@@ -25,7 +25,7 @@ export class GrameenPhoneSmsService implements NotificationService {
     this.senderId = smsConfig.senderId;
   }
 
-  async send({ to, body }: SendNotificationOptions): Promise<void> {
+  async send({ to, body }: ISendNotificationOptions): Promise<void> {
     if (this.apiUrl === 'log') {
       const logDir = path.resolve(process.cwd(), 'sms');
       if (!fs.existsSync(logDir)) {

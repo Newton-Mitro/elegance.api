@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { RefreshTokenDto } from '../dtos/refresh-token.dto';
 import { JwtRefreshTokenStrategy } from '../../infrastructure/strategies/jwt-refresh-token.strategy';
@@ -7,7 +7,8 @@ import { JwtRefreshTokenStrategy } from '../../infrastructure/strategies/jwt-ref
 export class RefreshTokenUseCase {
   constructor(
     private readonly jwtRefreshTokenStrategy: JwtRefreshTokenStrategy,
-    private readonly IUserRepository: IUserRepository,
+    @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository,
   ) {}
 
   async execute(dto: RefreshTokenDto): Promise<any> {
@@ -16,7 +17,7 @@ export class RefreshTokenUseCase {
         dto.refreshToken,
       );
 
-      const user = await this.IUserRepository.findById(decodedUser.id);
+      const user = await this.userRepository.findById(decodedUser.id);
       if (!user) {
         throw new UnauthorizedException();
       }

@@ -54,6 +54,11 @@ export class UserEntity extends Entity<UserProps> {
     return this.props.status === UserStatus.ACTIVE;
   }
 
+  public setPassword(password: string) {
+    this.props.password = password;
+    this.touch();
+  }
+
   // ✅ Change status method
   public changeStatus(newStatus: UserStatus): void {
     this.props.status = newStatus;

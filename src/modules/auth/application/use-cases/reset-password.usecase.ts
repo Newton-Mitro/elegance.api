@@ -1,23 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { ResetPasswordDto } from '../dtos/reset-password.dto';
 import { PasswordHasherService } from '../../domain/services/password-hasher.service';
+import { IResetTokenRepository } from '../../domain/interfaces/reset-token.repository';
 
 @Injectable()
 export class ResetPasswordUseCase {
   constructor(
-    private readonly IUserRepository: IUserRepository,
-    private readonly tokenService: TokenService,
+    @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository,
+    @Inject('IResetTokenRepository')
+    private readonly resetTokenRepository: IResetTokenRepository,
     private readonly passwordHasherService: PasswordHasherService,
   ) {}
 
   async execute(dto: ResetPasswordDto): Promise<any> {
-    const userId = this.tokenService.verifyResetToken(dto.token); // throws if invalid
+    const resetToken = await this.resetTokenRepository.findByPhone(dto.token); // throws if invalid
+
+    if (!resetToken) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    const user = await this.userRepository.findByPhone(resetToken.phone);
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
 
     const hashedPassword = await this.passwordHasherService.hash(
       dto.newPassword,
     );
-    await this.IUserRepository.updatePassword(userId, hashedPassword);
+
+    user.setPassword(hashedPassword);
+
+    await this.userRepository.save(user);
 
     return { message: 'Password successfully reset' };
   }

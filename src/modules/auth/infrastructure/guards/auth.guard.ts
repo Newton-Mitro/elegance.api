@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   CanActivate,
   ExecutionContext,
@@ -6,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { JwtAccessTokenStrategy } from '../services/jwt-access-token.service';
+import { JwtAccessTokenStrategy } from '../strategies/jwt-access-token.strategy';
 
 @Injectable()
 export class AuthGuard implements CanActivate {

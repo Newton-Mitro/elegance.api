@@ -1,4 +1,4 @@
-import { NotificationAttachment } from '../../domain/services/notification.service';
+import { INotificationAttachment } from '../../domain/services/notification.service';
 import { NotifierService } from '../../infrastructure/services/notifier.service';
 import { NotificationType } from '../types/notification-type.enum';
 
@@ -8,7 +8,7 @@ export class SendWelcomeEmailUseCase {
 
   async execute(
     to: string,
-    attachments?: NotificationAttachment[],
+    attachments?: INotificationAttachment[],
   ): Promise<void> {
     const subject = 'Welcome!';
     const body = '<h1>Thanks for joining us!</h1>';

@@ -1,4 +1,8 @@
 import { Module } from '@nestjs/common';
+import { NotifierService } from './infrastructure/services/notifier.service';
 
-@Module({})
+@Module({
+  exports: [NotifierService],
+  providers: [NotifierService],
+})
 export class NotificationModule {}

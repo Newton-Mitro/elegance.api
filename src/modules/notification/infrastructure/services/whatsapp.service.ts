@@ -2,15 +2,15 @@ import { ConfigService } from '@nestjs/config';
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import {
-  NotificationService,
-  SendNotificationOptions,
+  INotificationService,
+  ISendNotificationOptions,
 } from '../../domain/services/notification.service';
 import { WhatsappConfig } from '../../../../config/types/config.type';
 import fs from 'fs';
 import path from 'path';
 
 @Injectable()
-export class WhatsAppService implements NotificationService {
+export class WhatsAppService implements INotificationService {
   private readonly logger = new Logger(WhatsAppService.name);
   private readonly apiUrl: string;
   private readonly accessToken: string;
@@ -24,7 +24,7 @@ export class WhatsAppService implements NotificationService {
     this.apiUrl = `https://graph.facebook.com/v19.0/${this.phoneNumberId}/messages`;
   }
 
-  async send({ to, subject, body }: SendNotificationOptions): Promise<void> {
+  async send({ to, subject, body }: ISendNotificationOptions): Promise<void> {
     const fullMessage = subject ? `${subject}: ${body}` : body;
 
     // Log to file if accessToken is 'log'

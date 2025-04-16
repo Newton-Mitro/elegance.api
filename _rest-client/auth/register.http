@@ -1,0 +1,76 @@
+### Register
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "John Doe",
+  "phone": "0123456789",
+  "password": "secret123",
+  "email": "john@example.com"
+}
+
+###
+
+### Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "phone": "0123456789",
+  "password": "secret123"
+}
+
+###
+
+### Refresh Token
+POST http://localhost:3000/auth/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "your_refresh_token_here"
+}
+
+###
+
+### Forgot Password
+POST http://localhost:3000/auth/forgot-password
+Content-Type: application/json
+
+{
+  "phone": "0123456789"
+}
+
+###
+
+### Reset Password
+POST http://localhost:3000/auth/reset-password
+Content-Type: application/json
+
+{
+  "phone": "0123456789",
+  "token": "reset_token_here",
+  "newPassword": "newPassword123"
+}
+
+###
+
+### Verify Email
+POST http://localhost:3000/auth/verify-email
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "token": "verify_token_here"
+}
+
+###
+
+### Get Authenticated User
+GET http://localhost:3000/auth/me
+Authorization: Bearer your_access_token_here
+
+###
+
+### Logout
+POST http://localhost:3000/auth/logout
+Authorization: Bearer your_access_token_here

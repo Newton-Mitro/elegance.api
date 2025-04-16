@@ -18,6 +18,8 @@ export class RoleEntityMapper {
       id: role.id.toString(),
       name: role.name,
       description: role.description ?? null,
+      createdAt: role.createdAt,
+      updatedAt: role.updatedAt,
     };
   }
 }

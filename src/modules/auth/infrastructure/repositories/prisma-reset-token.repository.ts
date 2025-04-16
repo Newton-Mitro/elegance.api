@@ -5,7 +5,7 @@ import { IResetTokenRepository } from '../../domain/interfaces/reset-token.repos
 import { PrismaService } from '../../../../core/prisma/prisma.service';
 
 @Injectable()
-export class ResetTokenRepository implements IResetTokenRepository {
+export class PrismaResetTokenRepository implements IResetTokenRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findByPhone(phone: string): Promise<ResetTokenEntity | null> {

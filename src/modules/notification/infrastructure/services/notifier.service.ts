@@ -1,5 +1,5 @@
 import { NotificationType } from '../../application/types/notification-type.enum';
-import { SendNotificationOptions } from '../../domain/services/notification.service';
+import { ISendNotificationOptions } from '../../domain/services/notification.service';
 import { NodemailerEmailService } from './nodemailer-email.service';
 import { GrameenPhoneSmsService } from './grameenphone.sms.service';
 import { WhatsAppService } from './whatsapp.service';
@@ -20,7 +20,7 @@ export class NotifierService {
   }
 
   async sendNotification(
-    options: SendNotificationOptions & { type: NotificationType },
+    options: ISendNotificationOptions & { type: NotificationType },
   ): Promise<void> {
     const { type, to, subject, body, attachments } = options;
     switch (type) {

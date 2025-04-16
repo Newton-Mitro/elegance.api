@@ -1,16 +1,16 @@
-export interface NotificationAttachment {
+export interface INotificationAttachment {
   filename: string;
   content: Buffer | string;
   contentType?: string;
 }
 
-export interface SendNotificationOptions {
+export interface ISendNotificationOptions {
   to: string;
   subject: string;
   body: string;
-  attachments?: NotificationAttachment[];
+  attachments?: INotificationAttachment[];
 }
 
-export interface NotificationService {
-  send(options: SendNotificationOptions): Promise<void>;
+export interface INotificationService {
+  send(options: ISendNotificationOptions): Promise<void>;
 }

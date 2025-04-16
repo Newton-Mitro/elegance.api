@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { RegisterDto } from '../dtos/register.dto';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { PasswordHasherService } from '../../domain/services/password-hasher.service';
@@ -10,13 +10,14 @@ import { Email } from '../../../user/domain/value-objects/email.vo';
 @Injectable()
 export class RegisterUseCase {
   constructor(
-    private readonly userRepo: IUserRepository,
+    @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository,
     private readonly jwtAccessTokenStrategy: JwtAccessTokenStrategy,
     private readonly hasher: PasswordHasherService,
   ) {}
 
   async execute(dto: RegisterDto) {
-    const phoneExists = await this.userRepo.findByPhone(dto.phone);
+    const phoneExists = await this.userRepository.findByPhone(dto.phone);
     if (phoneExists) throw new Error('Phone already registered');
 
     const hashedPassword = await this.hasher.hash(dto.password);
@@ -28,7 +29,7 @@ export class RegisterUseCase {
       status: UserStatus.INACTIVE,
     });
 
-    await this.userRepo.save(newUser);
+    await this.userRepository.save(newUser);
 
     // TODO: Send Welcome Email if email exist
 

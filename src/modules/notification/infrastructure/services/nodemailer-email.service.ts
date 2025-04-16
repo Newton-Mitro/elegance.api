@@ -2,13 +2,13 @@ import { ConfigService } from '@nestjs/config';
 import nodemailer, { Transporter } from 'nodemailer';
 import { EmailConfig } from '../../../../config/types/config.type';
 import {
-  NotificationService,
-  SendNotificationOptions,
+  INotificationService,
+  ISendNotificationOptions,
 } from '../../domain/services/notification.service';
 import fs from 'fs';
 import path from 'path';
 
-export class NodemailerEmailService implements NotificationService {
+export class NodemailerEmailService implements INotificationService {
   private transporter: Transporter;
   private logEmailsToFile = false;
 
@@ -41,7 +41,7 @@ export class NodemailerEmailService implements NotificationService {
     subject,
     body,
     attachments,
-  }: SendNotificationOptions): Promise<void> {
+  }: ISendNotificationOptions): Promise<void> {
     const message = {
       from: '"App Team" <noreply@app.com>',
       to,

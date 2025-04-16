@@ -1,4 +1,5 @@
 import {
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -6,11 +7,14 @@ import {
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { VerifyEmailDto } from '../dtos/verify-account.dto';
 import { IVerifyTokenRepository } from '../../domain/interfaces/verify-token.repository';
+import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
 
 @Injectable()
 export class VerifyEmailUseCase {
   constructor(
+    @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
+    @Inject('IVerifyTokenRepository')
     private readonly verifyTokenRepository: IVerifyTokenRepository,
   ) {}
 
@@ -21,7 +25,9 @@ export class VerifyEmailUseCase {
       throw new UnauthorizedException('Invalid token');
     }
 
-    const user = await this.userRepository.findById(verifyToken.userId);
+    const user = await this.userRepository.findById(
+      new UniqueEntityID(verifyToken.userId),
+    );
 
     if (!user) {
       throw new NotFoundException('User not found.');
