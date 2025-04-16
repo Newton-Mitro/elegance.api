@@ -5,6 +5,7 @@ import { PasswordHasherService } from '../../domain/services/password-hasher.ser
 import { UserEntity } from '../../../user/domain/entities/user.entity';
 import { UserStatus } from '@prisma/client';
 import { JwtAccessTokenStrategy } from '../../infrastructure/strategies/jwt-access-token.strategy';
+import { Email } from '../../../user/domain/value-objects/email.vo';
 
 @Injectable()
 export class RegisterUseCase {
@@ -15,17 +16,21 @@ export class RegisterUseCase {
   ) {}
 
   async execute(dto: RegisterDto) {
-    const emailExists = await this.userRepo.findByPhone(dto.phone);
-    if (emailExists) throw new Error('Phone already registered');
+    const phoneExists = await this.userRepo.findByPhone(dto.phone);
+    if (phoneExists) throw new Error('Phone already registered');
 
     const hashedPassword = await this.hasher.hash(dto.password);
     const newUser = UserEntity.create({
+      name: dto.fullName,
+      email: dto.email ? Email.create(dto.email) : undefined,
       phone: dto.phone,
       password: hashedPassword,
       status: UserStatus.INACTIVE,
     });
 
     await this.userRepo.save(newUser);
+
+    // TODO: Send Welcome Email if email exist
 
     const token = await this.jwtAccessTokenStrategy.sign(newUser);
 
