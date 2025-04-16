@@ -4,7 +4,7 @@ import { NotificationService } from '../../../notification/domain/services/notif
 import { ForgotPasswordDto } from '../dtos/forgot-password.dto';
 import { ResetTokenRepository } from '../../infrastructure/repositories/prisma-reset-token.repository';
 import { ResetTokenEntity } from '../../domain/entities/reset-token.entity';
-import { TemplateEngine } from '../../infrastructure/email/template.engine';
+import { TemplateEngine } from '../../../../core/email/template.engine';
 
 @Injectable()
 export class ForgotPasswordUseCase {
