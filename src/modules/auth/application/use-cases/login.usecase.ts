@@ -4,6 +4,7 @@ import { PasswordHasherService } from '../../domain/services/password-hasher.ser
 import { LoginDto } from '../dtos/login.dto';
 import { JwtAccessTokenStrategy } from '../../infrastructure/strategies/jwt-access-token.strategy';
 import { JwtRefreshTokenStrategy } from '../../infrastructure/strategies/jwt-refresh-token.strategy';
+import { AuthUser } from '../../domain/entities/auth.user';
 
 @Injectable()
 export class LoginUseCase {
@@ -30,7 +31,13 @@ export class LoginUseCase {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = user;
+    const payload: AuthUser = {
+      id: user.id.toString(),
+      name: user.name,
+      phone: user.phone,
+      email: user.email?.value,
+      profilePictureUrl: user.profilePictureUrl,
+    };
 
     const accessToken = await this.jwtAccessTokenStrategy.sign(payload);
     const refreshToken = await this.jwtRefreshTokenStrategy.sign(payload);

@@ -6,6 +6,7 @@ import { UserEntity } from '../../../user/domain/entities/user.entity';
 import { UserStatus } from '@prisma/client';
 import { JwtAccessTokenStrategy } from '../../infrastructure/strategies/jwt-access-token.strategy';
 import { Email } from '../../../user/domain/value-objects/email.vo';
+import { AuthUser } from '../../domain/entities/auth.user';
 
 @Injectable()
 export class RegisterUseCase {
@@ -32,8 +33,15 @@ export class RegisterUseCase {
     await this.userRepository.save(newUser);
 
     // TODO: Send Welcome Email if email exist
+    const payload: AuthUser = {
+      id: newUser.id.toString(),
+      name: newUser.name,
+      phone: newUser.phone,
+      email: newUser.email?.value,
+      profilePictureUrl: newUser.profilePictureUrl,
+    };
 
-    const token = await this.jwtAccessTokenStrategy.sign(newUser);
+    const token = await this.jwtAccessTokenStrategy.sign(payload);
 
     return {
       accessToken: token,
