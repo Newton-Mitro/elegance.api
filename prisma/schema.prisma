@@ -38,6 +38,7 @@ model User {
   password          String
   status            UserStatus
   createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
 
   // Relationships
   invoices      Invoice[]
@@ -51,9 +52,11 @@ model User {
 }
 
 model Role {
-  id          String  @id @default(uuid())
-  name        String  @unique
+  id          String   @id @default(uuid())
+  name        String   @unique
   description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relationships
   roles UserRoles[] // Many-to-many via UserRoles
@@ -71,6 +74,9 @@ model UserRoles {
   revokedBy String? // Nullable: if revoked
   reason    String? // Optional reason for assignment or revocation
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relationships
   user User @relation(fields: [userId], references: [id])
   role Role @relation(fields: [roleId], references: [id])
@@ -83,19 +89,31 @@ model RefreshToken {
   userId    String   @unique
   token     String   @unique
   expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relationship
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ResetToken {
+  id        String   @id @default(uuid())
+  phone     String   @unique
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ===========================
 // 🧖 SERVICE & CATEGORIES
 // ===========================
 model ServiceCategory {
-  id       String    @id @default(uuid())
-  name     String    @unique // e.g. "HAIR"
-  nameBn   String? // e.g. "চুলের সেবা"
-  services Service[]
+  id        String    @id @default(uuid())
+  name      String    @unique // e.g. "HAIR"
+  nameBn    String? // e.g. "চুলের সেবা"
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  services  Service[]
 }
 
 model Service {
@@ -107,6 +125,7 @@ model Service {
   price       Decimal
   durationMin Int
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   appointmentServices AppointmentService[]
   category            ServiceCategory      @relation(fields: [categoryId], references: [id])
@@ -129,6 +148,7 @@ model Appointment {
   isWalkIn        Boolean           @default(false) // If the appointment is a walk-in
   status          AppointmentStatus @default(SCHEDULED)
   createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 
   invoice  Invoice?
   services AppointmentService[]
@@ -136,10 +156,12 @@ model Appointment {
 }
 
 model AppointmentService {
-  id            String  @id @default(uuid())
+  id            String   @id @default(uuid())
   appointmentId String
   serviceId     String
   price         Decimal // Store the price at time of booking
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   service     Service     @relation(fields: [serviceId], references: [id])
   appointment Appointment @relation(fields: [appointmentId], references: [id])
@@ -169,6 +191,7 @@ model Invoice {
   paymentStatus  PaymentStatus @default(PENDING)
   paymentDate    DateTime?
   createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   vatPercentage Float
   vatAmount     Decimal
@@ -188,6 +211,7 @@ model Vendor {
   email     String?
   address   String?
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   purchaseOrders PurchaseOrder[]
   payments       VendorPayment[]
@@ -199,6 +223,7 @@ model PurchaseOrder {
   totalCost Decimal
   status    PurchaseStatus @default(PENDING)
   createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   vendor Vendor              @relation(fields: [vendorId], references: [id])
   items  PurchaseOrderItem[]
@@ -212,22 +237,26 @@ enum PurchaseStatus {
 }
 
 model PurchaseOrderItem {
-  id              String  @id @default(uuid())
+  id              String   @id @default(uuid())
   purchaseOrderId String
   productId       String
   quantity        Int
   unitPrice       Decimal
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
   product       Product       @relation(fields: [productId], references: [id])
 }
 
 model VendorPayment {
-  id       String   @id @default(uuid())
-  vendorId String
-  amount   Decimal
-  method   String
-  paidAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  vendorId  String
+  amount    Decimal
+  method    String
+  paidAt    DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   vendor Vendor @relation(fields: [vendorId], references: [id])
 }
@@ -236,18 +265,23 @@ model VendorPayment {
 // 🧴 PRODUCTS & INVENTORY
 // ===========================
 model ProductCategory {
-  id       String    @id @default(uuid())
-  name     String    @unique
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   products Product[]
 }
 
 model Product {
-  id          String  @id @default(uuid())
-  name        String  @unique
+  id          String   @id @default(uuid())
+  name        String   @unique
   description String?
   price       Decimal
   stock       Int // Available stock
   categoryId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   saleProducts          SaleProduct[]
   inventoryStocks       InventoryStock[]
@@ -265,7 +299,7 @@ model InventoryStock {
   purchasePrice Decimal
   salePrice     Decimal
   expiryDate    DateTime?
-  addedAt       DateTime  @default(now())
+  createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   inventoryTransactions InventoryTransaction[]
@@ -291,6 +325,7 @@ model InventoryTransaction {
   relatedRef       String? // e.g. saleId, refundId
   inventoryStockId String?
   createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
 
   product        Product         @relation(fields: [productId], references: [id])
   inventoryStock InventoryStock? @relation(fields: [inventoryStockId], references: [id])
@@ -315,11 +350,13 @@ model Sale {
 
 // SaleProduct model (for many-to-many relationship with product)
 model SaleProduct {
-  id        String  @id @default(uuid())
+  id        String   @id @default(uuid())
   saleId    String
   productId String
   quantity  Int // Quantity sold
   price     Decimal // Price at the time of sale
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   sale    Sale    @relation(fields: [saleId], references: [id])
   product Product @relation(fields: [productId], references: [id])
@@ -344,8 +381,9 @@ model Refund {
   refundedAmount Decimal
   reason         String?
   status         RefundStatus @default(REQUESTED)
-  createdAt      DateTime     @default(now())
   journalEntryId String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   refundItems RefundItem[]
   journal     JournalEntry? @relation(fields: [journalEntryId], references: [id])
@@ -355,11 +393,13 @@ model Refund {
 }
 
 model RefundItem {
-  id        String  @id @default(uuid())
+  id        String   @id @default(uuid())
   refundId  String
   productId String
   quantity  Int
   price     Decimal
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   refund  Refund  @relation(fields: [refundId], references: [id])
   product Product @relation(fields: [productId], references: [id])
@@ -390,6 +430,7 @@ model Discount {
   endDate    DateTime // When the discount is valid until
   isActive   Boolean  @default(true)
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 // ===========================
@@ -414,6 +455,7 @@ model Account {
   isGroup        Boolean     @default(false)
   openingBalance Decimal     @default(0)
   createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
   entries  JournalEntry[]
   parent   Account?       @relation("AccountHierarchy", fields: [parentId], references: [id])
@@ -445,6 +487,7 @@ model Voucher {
   reference String? // Optional external ref (e.g., invoice ID)
   narration String?
   createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
   entries JournalEntry[]
 }
@@ -458,6 +501,7 @@ model JournalEntry {
   credit    Decimal  @default(0)
   memo      String?
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   refunds Refund[]
   voucher Voucher  @relation(fields: [voucherId], references: [id])
@@ -491,6 +535,8 @@ model AuditLog {
   ipAddress         String?
   actionStatus      ActionStatus @default(FAILED)
   actionDate        DateTime     @default(now())
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
 
   // Relationship
   user User @relation(fields: [actionTakenBy], references: [id])
