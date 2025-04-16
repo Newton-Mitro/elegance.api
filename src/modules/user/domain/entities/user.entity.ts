@@ -53,4 +53,23 @@ export class UserEntity extends Entity<UserProps> {
   public isActive(): boolean {
     return this.props.status === UserStatus.ACTIVE;
   }
+
+  // ✅ Change status method
+  public changeStatus(newStatus: UserStatus): void {
+    this.props.status = newStatus;
+    this.touch(); // Optionally update the updatedAt timestamp if supported
+  }
+
+  // Optional helper methods
+  public activate(): void {
+    this.changeStatus(UserStatus.ACTIVE);
+  }
+
+  public deactivate(): void {
+    this.changeStatus(UserStatus.INACTIVE);
+  }
+
+  public suspend(): void {
+    this.changeStatus(UserStatus.SUSPENDED);
+  }
 }

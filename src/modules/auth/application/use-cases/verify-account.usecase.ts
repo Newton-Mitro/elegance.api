@@ -1,18 +1,35 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { VerifyEmailDto } from '../dtos/verify-account.dto';
+import { IVerifyTokenRepository } from '../../domain/interfaces/verify-token.repository';
 
 @Injectable()
 export class VerifyEmailUseCase {
   constructor(
-    private readonly IUserRepository: IUserRepository,
-    private readonly tokenService: TokenService,
+    private readonly userRepository: IUserRepository,
+    private readonly verifyTokenRepository: IVerifyTokenRepository,
   ) {}
 
   async execute(dto: VerifyEmailDto): Promise<any> {
-    const userId = this.tokenService.verifyEmailToken(dto.token);
+    const verifyToken = await this.verifyTokenRepository.findByToken(dto.token);
 
-    await this.IUserRepository.verifyEmail(userId);
+    if (!verifyToken) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    const user = await this.userRepository.findById(verifyToken.userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    user.activate();
+
+    await this.userRepository.save(user);
 
     return { message: 'Email verified successfully' };
   }

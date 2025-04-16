@@ -5,26 +5,25 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   Post,
   Request,
-  HttpStatus,
-  HttpException,
 } from '@nestjs/common';
 
-import { RegisterUseCase } from '../../application/use-cases/register.usecase';
 import { LoginUseCase } from '../../application/use-cases/login.usecase';
 import { RefreshTokenUseCase } from '../../application/use-cases/refresh-token.usecase';
-
-import { RegisterDto } from '../../application/dtos/register.dto';
+import { RegisterUseCase } from '../../application/use-cases/register.usecase';
+import { ForgotPasswordDto } from '../../application/dtos/forgot-password.dto';
 import { LoginDto } from '../../application/dtos/login.dto';
 import { RefreshTokenDto } from '../../application/dtos/refresh-token.dto';
-import { ForgotPasswordDto } from '../../application/dtos/forgot-password.dto';
+import { RegisterDto } from '../../application/dtos/register.dto';
 import { ResetPasswordDto } from '../../application/dtos/reset-password.dto';
 import { VerifyEmailDto } from '../../application/dtos/verify-account.dto';
 import { ForgotPasswordUseCase } from '../../application/use-cases/forgot-password.usecase';
+import { LogoutUseCase } from '../../application/use-cases/logout.usecase';
 import { ResetPasswordUseCase } from '../../application/use-cases/reset-password.usecase';
 import { VerifyEmailUseCase } from '../../application/use-cases/verify-account.usecase';
-import { LogoutUseCase } from '../../application/use-cases/logout.usecase';
 
 @Controller('auth')
 export class AuthController {
