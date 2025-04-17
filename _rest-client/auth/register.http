@@ -50,7 +50,7 @@ Content-Type: application/json
 
 {
   "phone": "0123456789",
-  "token": "reset_token_here",
+  "token": "01e85b69-07ba-4ab7-88a8-398a9abdfa70",
   "newPassword": "newPassword123"
 }
 

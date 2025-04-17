@@ -8,6 +8,13 @@ import { PrismaService } from '../../../../core/prisma/prisma.service';
 export class PrismaResetTokenRepository implements IResetTokenRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async findByToken(token: string): Promise<ResetTokenEntity | null> {
+    const resetToken = await this.prisma.resetToken.findUnique({
+      where: { token },
+    });
+    return resetToken ? ResetTokenMapper.toDomain(resetToken) : null;
+  }
+
   async findByPhone(phone: string): Promise<ResetTokenEntity | null> {
     const token = await this.prisma.resetToken.findUnique({ where: { phone } });
     return token ? ResetTokenMapper.toDomain(token) : null;

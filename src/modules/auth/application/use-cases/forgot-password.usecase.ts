@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetTokenEntity } from '../../domain/entities/reset-token.entity';
@@ -19,16 +19,16 @@ export class ForgotPasswordUseCase {
     private readonly resetTokenRepository: IResetTokenRepository, // for creating/validating tokens
   ) {}
 
-  async execute(dto: ForgotPasswordDto): Promise<any> {
+  async execute(dto: ForgotPasswordDto): Promise<string> {
     const user = isEmail(dto.identifier)
       ? await this.userRepository.findByEmail(dto.identifier)
       : await this.userRepository.findByPhone(dto.identifier);
 
     if (!user) {
       // Don't reveal if phone number exists
-      return {
-        message: 'If the phone number exists, instructions will be sent.',
-      };
+      throw new NotFoundException(
+        'If the phone number exists, instructions will be sent.',
+      );
     }
 
     const token = randomUUID();
@@ -53,6 +53,6 @@ export class ForgotPasswordUseCase {
       });
     }
 
-    return { message: 'Password reset instructions sent to your email' };
+    return token;
   }
 }

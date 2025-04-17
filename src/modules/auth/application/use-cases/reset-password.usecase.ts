@@ -20,7 +20,7 @@ export class ResetPasswordUseCase {
   ) {}
 
   async execute(dto: ResetPasswordDto): Promise<any> {
-    const resetToken = await this.resetTokenRepository.findByPhone(dto.token); // throws if invalid
+    const resetToken = await this.resetTokenRepository.findByToken(dto.token); // throws if invalid
 
     if (!resetToken) {
       throw new UnauthorizedException('Invalid token');

@@ -149,9 +149,10 @@ export class AuthController {
   @Post('forgot-password')
   async forgotPassword(@Body() dto: ForgotPasswordDto, @Res() res: Response) {
     try {
-      await this.forgotPasswordUseCase.execute(dto);
+      const result = await this.forgotPasswordUseCase.execute(dto);
       return res.status(HttpStatus.OK).json({
         message: 'Password reset link sent.',
+        data: result,
       });
     } catch (error) {
       if (error instanceof Error) {
