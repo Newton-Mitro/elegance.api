@@ -19,6 +19,9 @@ import { PrismaRefreshTokenRepository } from './infrastructure/repositories/pris
 import { NotificationModule } from '../notification/notification.module';
 import { PrismaResetTokenRepository } from './infrastructure/repositories/prisma-reset-token.repository';
 import { PrismaVerifyTokenRepository } from './infrastructure/repositories/prisma-verify-token.repository';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './presentation/guards/auth.guard';
+import { RolesGuard } from './presentation/guards/roles.guard';
 
 @Module({
   imports: [
@@ -67,6 +70,14 @@ import { PrismaVerifyTokenRepository } from './infrastructure/repositories/prism
     {
       provide: 'IResetTokenRepository',
       useClass: PrismaResetTokenRepository,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
   controllers: [AuthController],

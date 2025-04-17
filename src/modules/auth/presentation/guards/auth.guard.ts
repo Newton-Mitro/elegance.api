@@ -1,17 +1,31 @@
+// auth.guard.ts
 import {
   CanActivate,
   ExecutionContext,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { JwtAccessTokenStrategy } from '../strategies/jwt-access-token.strategy';
+import { JwtAccessTokenStrategy } from '../../infrastructure/strategies/jwt-access-token.strategy';
+import { IS_PUBLIC_KEY } from '../../../../core/decorators/public.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly jwtAccessTokenService: JwtAccessTokenStrategy) {}
+  constructor(
+    private readonly jwtAccessTokenService: JwtAccessTokenStrategy,
+    private readonly reflector: Reflector,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) {
+      return true;
+    }
+
     const request = context.switchToHttp().getRequest<Request>();
     const authHeader = request.headers['authorization'];
 
@@ -23,7 +37,7 @@ export class AuthGuard implements CanActivate {
 
     try {
       const payload = await this.jwtAccessTokenService.verify(token);
-      request.user = payload; // Attach user to request
+      request.user = payload;
       return true;
     } catch (err) {
       console.log(err);

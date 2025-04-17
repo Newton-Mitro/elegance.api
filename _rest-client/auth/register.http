@@ -5,7 +5,7 @@ Content-Type: application/json
 {
   "fullName": "John Doe",
   "phone": "0123456789",
-  "password": "secret123",
+  "password": "newPassword123",
   "email": "john@example.com"
 }
 
@@ -17,21 +17,26 @@ Content-Type: application/json
 
 {
   "identifier": "0123456789",
-  "password": "secret123"
+  "password": "newPassword123"
 }
 
 ### SET TOKEN
 @refreshToken = {{login.response.body.data.refreshToken}}
+@accessToken = {{login.response.body.data.accessToken}}
 
 ###
 
-### Refresh Token
+# @name refresh
 POST http://localhost:3000/auth/refresh-token
 Content-Type: application/json
 
 {
   "refreshToken": "{{refreshToken}}"
 }
+
+### SET TOKEN
+@accessToken = {{refresh.response.body.data.accessToken}}
+
 ###
 
 ### Forgot Password
@@ -50,7 +55,7 @@ Content-Type: application/json
 
 {
   "phone": "0123456789",
-  "token": "01e85b69-07ba-4ab7-88a8-398a9abdfa70",
+  "token": "e2659a81-f5d8-4c28-a7a7-52fa30824e23",
   "newPassword": "newPassword123"
 }
 
@@ -69,10 +74,10 @@ Content-Type: application/json
 
 ### Get Authenticated User
 GET http://localhost:3000/auth/me
-Authorization: Bearer your_access_token_here
+Authorization: Bearer {{accessToken}}
 
 ###
 
 ### Logout
 POST http://localhost:3000/auth/logout
-Authorization: Bearer your_access_token_here
+Authorization: Bearer {{refreshToken}}

@@ -22,6 +22,9 @@ import { RefreshTokenUseCase } from '../../application/use-cases/refresh-token.u
 import { RegisterUseCase } from '../../application/use-cases/register.usecase';
 import { ResetPasswordUseCase } from '../../application/use-cases/reset-password.usecase';
 import { VerifyEmailUseCase } from '../../application/use-cases/verify-account.usecase';
+import { Public } from '../../../../core/decorators/public.decorator';
+import { Roles } from '../../../../core/decorators/roles.decorator';
+import { Role } from '../../../../core/enums/role.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -35,6 +38,7 @@ export class AuthController {
     private readonly logoutUsecase: LogoutUseCase,
   ) {}
 
+  @Public()
   @Post('register')
   async register(@Body() dto: RegisterDto, @Res() res: Response) {
     try {
@@ -57,6 +61,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('login')
   async login(@Body() dto: LoginDto, @Res() res: Response) {
     try {
@@ -79,6 +84,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('refresh-token')
   async refreshToken(@Body() dto: RefreshTokenDto, @Res() res: Response) {
     try {
@@ -102,11 +108,27 @@ export class AuthController {
   }
 
   @Get('me')
+  @Roles(Role.Admin, Role.Manager)
   getMe(@Req() req: Request, @Res() res: Response) {
     try {
+      if (!req.user) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          message: 'Failed to get user info.',
+        });
+      }
+      const user = req.user;
+
+      const payload = {
+        id: user.id,
+        name: user.name,
+        phone: user.phone,
+        email: user.email,
+        profilePictureUrl: user.profilePictureUrl,
+      };
+
       return res.status(HttpStatus.OK).json({
         message: 'User information retrieved successfully.',
-        data: req.user,
+        data: payload,
       });
     } catch (error) {
       if (error instanceof Error) {
@@ -146,6 +168,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('forgot-password')
   async forgotPassword(@Body() dto: ForgotPasswordDto, @Res() res: Response) {
     try {
@@ -168,6 +191,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('reset-password')
   async resetPassword(@Body() dto: ResetPasswordDto, @Res() res: Response) {
     try {
@@ -189,6 +213,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('verify-email')
   async verifyEmail(@Body() dto: VerifyEmailDto, @Res() res: Response) {
     try {

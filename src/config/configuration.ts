@@ -17,7 +17,7 @@ export default () => ({
   // JWT Configuration
   jwt: {
     secret: process.env.JWT_SECRET || 'your-default-jwt-secret',
-    exp: process.env.JWT_EXP || '1h', // JWT expiration time
+    exp: process.env.JWT_EXP || '30s', // JWT expiration time
     refExp: process.env.JWT_REF_EXP || '7d', // JWT refresh token expiration time
     issuer: process.env.JWT_ISSUER || 'your-app-name', // JWT issuer
     audience: process.env.JWT_AUDIENCE || 'your-app-users', // JWT audience

@@ -34,6 +34,7 @@ export class RefreshTokenUseCase {
         phone: decodedUser.phone,
         email: decodedUser.email,
         profilePictureUrl: decodedUser.profilePictureUrl,
+        roles: decodedUser.roles,
       };
 
       const newAccessToken = await this.jwtAccessTokenStrategy.sign(payload);
