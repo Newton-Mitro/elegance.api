@@ -1,7 +1,8 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
-import { RefreshTokenDto } from '../dtos/refresh-token.dto';
+import { RefreshTokenDto } from '../dto/refresh-token.dto';
 import { JwtRefreshTokenStrategy } from '../../infrastructure/strategies/jwt-refresh-token.strategy';
+import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
 
 @Injectable()
 export class RefreshTokenUseCase {
@@ -11,13 +12,15 @@ export class RefreshTokenUseCase {
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async execute(dto: RefreshTokenDto): Promise<any> {
+  async execute(dto: RefreshTokenDto): Promise<{ accessToken: string }> {
     try {
       const decodedUser = await this.jwtRefreshTokenStrategy.verify(
         dto.refreshToken,
       );
 
-      const user = await this.userRepository.findById(decodedUser.id);
+      const user = await this.userRepository.findById(
+        new UniqueEntityID(decodedUser.id),
+      );
       if (!user) {
         throw new UnauthorizedException();
       }

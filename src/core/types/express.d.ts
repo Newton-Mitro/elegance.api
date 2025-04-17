@@ -1,7 +1,7 @@
-import { UserEntity } from '../../modules/user/domain/entities/user.entity';
+import { AuthUserDto } from '../../modules/auth/application/dto/auth-user.dto';
 
 declare module 'express' {
   interface Request {
-    user?: UserEntity;
+    user?: AuthUserDto;
   }
 }

@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
-import { VerifyEmailDto } from '../dtos/verify-account.dto';
+import { VerifyEmailDto } from '../dto/verify-account.dto';
 import { IVerifyTokenRepository } from '../../domain/interfaces/verify-token.repository';
 import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
 

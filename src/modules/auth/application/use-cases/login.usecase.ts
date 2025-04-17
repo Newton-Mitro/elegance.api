@@ -1,10 +1,13 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { PasswordHasherService } from '../../domain/services/password-hasher.service';
-import { LoginDto } from '../dtos/login.dto';
+import { LoginDto } from '../dto/login.dto';
 import { JwtAccessTokenStrategy } from '../../infrastructure/strategies/jwt-access-token.strategy';
 import { JwtRefreshTokenStrategy } from '../../infrastructure/strategies/jwt-refresh-token.strategy';
-import { AuthUser } from '../../domain/entities/auth.user';
+import { AuthUserDto } from '../dto/auth-user.dto';
+import { isEmail } from 'class-validator';
+import { LoginResponseDto } from '../dto/login-response.dto';
+import { AuthUserMapper } from '../mappers/auth-user.mapper';
 
 @Injectable()
 export class LoginUseCase {
@@ -16,8 +19,11 @@ export class LoginUseCase {
     private readonly passwordHasherService: PasswordHasherService,
   ) {}
 
-  async execute(dto: LoginDto): Promise<any> {
-    const user = await this.userRepository.findByPhone(dto.email);
+  async execute(dto: LoginDto): Promise<LoginResponseDto> {
+    const user = isEmail(dto.identifier)
+      ? await this.userRepository.findByEmail(dto.identifier)
+      : await this.userRepository.findByPhone(dto.identifier);
+
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -31,7 +37,7 @@ export class LoginUseCase {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload: AuthUser = {
+    const payload: AuthUserDto = {
       id: user.id.toString(),
       name: user.name,
       phone: user.phone,
@@ -41,7 +47,8 @@ export class LoginUseCase {
 
     const accessToken = await this.jwtAccessTokenStrategy.sign(payload);
     const refreshToken = await this.jwtRefreshTokenStrategy.sign(payload);
+    const userDto = AuthUserMapper.toAuthUserDto(user);
 
-    return { accessToken, refreshToken, user };
+    return { accessToken, refreshToken, user: userDto };
   }
 }

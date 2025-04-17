@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
-import { ForgotPasswordDto } from '../dtos/forgot-password.dto';
+import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetTokenEntity } from '../../domain/entities/reset-token.entity';
 import { TemplateEngine } from '../../../../core/email/template.engine';
 import { IResetTokenRepository } from '../../domain/interfaces/reset-token.repository';

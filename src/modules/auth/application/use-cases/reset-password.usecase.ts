@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
-import { ResetPasswordDto } from '../dtos/reset-password.dto';
+import { ResetPasswordDto } from '../dto/reset-password.dto';
 import { PasswordHasherService } from '../../domain/services/password-hasher.service';
 import { IResetTokenRepository } from '../../domain/interfaces/reset-token.repository';
 
