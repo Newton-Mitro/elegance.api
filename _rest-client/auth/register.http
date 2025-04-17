@@ -11,7 +11,7 @@ Content-Type: application/json
 
 ###
 
-### Login
+# @name login
 POST http://localhost:3000/auth/login
 Content-Type: application/json
 
@@ -20,6 +20,9 @@ Content-Type: application/json
   "password": "secret123"
 }
 
+### SET TOKEN
+@refreshToken = {{login.response.body.data.refreshToken}}
+
 ###
 
 ### Refresh Token
@@ -27,9 +30,8 @@ POST http://localhost:3000/auth/refresh-token
 Content-Type: application/json
 
 {
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiNTdhNWQ5LTI1OTctNGFjYy04MmJmLWZhNzVkNDAyYWZhZiIsIm5hbWUiOiJKb2huIERvZSIsInBob25lIjoiMDEyMzQ1Njc4OSIsImVtYWlsIjoiam9obkBleGFtcGxlLmNvbSIsImlhdCI6MTc0NDg2NzUzMywiZXhwIjoxNzQ1NDcyMzMzLCJhdWQiOiJ3d3cuZWxlZ2FuY2UuY29tIiwiaXNzIjoid3d3LmVsZWdhbmNlLmNvbSIsInN1YiI6InJlZnJlc2gtdG9rZW4ifQ.a3RXwv6nz_i-cUUqmBeTyW9qkWszMSnPkYOBzEFCtMg"
+  "refreshToken": "{{refreshToken}}"
 }
-
 ###
 
 ### Forgot Password
@@ -37,7 +39,7 @@ POST http://localhost:3000/auth/forgot-password
 Content-Type: application/json
 
 {
-  "phone": "0123456789"
+  "identifier": "0123456789"
 }
 
 ###

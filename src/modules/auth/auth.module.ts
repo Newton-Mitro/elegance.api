@@ -16,7 +16,6 @@ import { JwtRefreshTokenStrategy } from './infrastructure/strategies/jwt-refresh
 import { PrismaModule } from '../../core/prisma/prisma.module';
 import { UserModule } from '../user/user.module';
 import { PrismaRefreshTokenRepository } from './infrastructure/repositories/prisma-refresh-token.repository';
-import { NotifierService } from '../notification/infrastructure/services/notifier.service';
 import { NotificationModule } from '../notification/notification.module';
 import { PrismaResetTokenRepository } from './infrastructure/repositories/prisma-reset-token.repository';
 import { PrismaVerifyTokenRepository } from './infrastructure/repositories/prisma-verify-token.repository';
@@ -36,7 +35,7 @@ import { PrismaVerifyTokenRepository } from './infrastructure/repositories/prism
         return {
           secret: jwtConfig.secret,
           signOptions: {
-            expiresIn: jwtConfig.exp ?? '1h',
+            expiresIn: jwtConfig.exp,
             audience: jwtConfig.audience,
             issuer: jwtConfig.issuer,
             subject: 'access-token',
@@ -47,7 +46,6 @@ import { PrismaVerifyTokenRepository } from './infrastructure/repositories/prism
     }),
   ],
   providers: [
-    NotifierService,
     LoginUseCase,
     RegisterUseCase,
     LogoutUseCase,

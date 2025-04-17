@@ -7,13 +7,15 @@ import {
 } from '../../domain/services/notification.service';
 import fs from 'fs';
 import path from 'path';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class NodemailerEmailService implements INotificationService {
   private transporter: Transporter;
   private logEmailsToFile = false;
 
   constructor(private readonly configService: ConfigService) {
-    const emailConfig = this.configService.get<EmailConfig>('email');
+    const emailConfig = this.configService.get<EmailConfig>('email')!;
 
     if (emailConfig?.host === 'log') {
       this.logEmailsToFile = true;
@@ -26,11 +28,11 @@ export class NodemailerEmailService implements INotificationService {
       });
     } else {
       this.transporter = nodemailer.createTransport({
-        host: emailConfig?.host,
-        port: emailConfig?.port || 587,
+        host: emailConfig.host,
+        port: emailConfig.port || 587,
         auth: {
-          user: emailConfig?.username,
-          pass: emailConfig?.password,
+          user: emailConfig.username,
+          pass: emailConfig.password,
         },
       });
     }

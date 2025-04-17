@@ -19,7 +19,7 @@ export class JwtAccessTokenStrategy implements IJwtService {
       const jwt = this.configService.get<JwtConfig>('jwt')!;
       const refreshToken = await this.jwtService.signAsync(payload, {
         secret: jwt.secret,
-        expiresIn: jwt.exp ?? '1h',
+        expiresIn: jwt.exp,
         subject: 'refresh-token',
         issuer: jwt.issuer,
         audience: jwt.audience,

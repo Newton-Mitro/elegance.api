@@ -47,6 +47,7 @@ export class LoginUseCase {
 
     const accessToken = await this.jwtAccessTokenStrategy.sign(payload);
     const refreshToken = await this.jwtRefreshTokenStrategy.sign(payload);
+
     const userDto = AuthUserMapper.toAuthUserDto(user);
 
     return { accessToken, refreshToken, user: userDto };

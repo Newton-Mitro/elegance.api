@@ -3,7 +3,9 @@ import { ISendNotificationOptions } from '../../domain/services/notification.ser
 import { NodemailerEmailService } from './nodemailer-email.service';
 import { GrameenPhoneSmsService } from './grameenphone.sms.service';
 import { WhatsAppService } from './whatsapp.service';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class NotifierService {
   private emailService: NodemailerEmailService;
   private smsService: GrameenPhoneSmsService;

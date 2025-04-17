@@ -1,18 +1,16 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { RefreshTokenDto } from '../dto/refresh-token.dto';
 import { JwtRefreshTokenStrategy } from '../../infrastructure/strategies/jwt-refresh-token.strategy';
-import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
 import { JwtAccessTokenStrategy } from '../../infrastructure/strategies/jwt-access-token.strategy';
-import { AuthUserMapper } from '../mappers/auth-user.mapper';
+import { IRefreshTokenRepository } from '../../domain/interfaces/refresh-token.repository';
 
 @Injectable()
 export class RefreshTokenUseCase {
   constructor(
     private readonly jwtRefreshTokenStrategy: JwtRefreshTokenStrategy,
     private readonly jwtAccessTokenStrategy: JwtAccessTokenStrategy,
-    @Inject('IUserRepository')
-    private readonly userRepository: IUserRepository,
+    @Inject('IRefreshTokenRepository')
+    private readonly refreshTokenRepository: IRefreshTokenRepository,
   ) {}
 
   async execute(dto: RefreshTokenDto): Promise<{ accessToken: string }> {
@@ -21,19 +19,28 @@ export class RefreshTokenUseCase {
         dto.refreshToken,
       );
 
-      const user = await this.userRepository.findById(
-        new UniqueEntityID(decodedUser.id),
+      console.log(decodedUser);
+
+      const refreshToken = await this.refreshTokenRepository.findByToken(
+        dto.refreshToken,
       );
-      if (!user) {
-        throw new UnauthorizedException();
+      if (!refreshToken) {
+        throw new UnauthorizedException('Invalid refresh token');
       }
 
-      const payload = AuthUserMapper.toAuthUserDto(user);
+      const payload = {
+        id: decodedUser.id,
+        name: decodedUser.name,
+        phone: decodedUser.phone,
+        email: decodedUser.email,
+        profilePictureUrl: decodedUser.profilePictureUrl,
+      };
 
       const newAccessToken = await this.jwtAccessTokenStrategy.sign(payload);
 
       return { accessToken: newAccessToken };
-    } catch {
+    } catch (e) {
+      console.log(e);
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
