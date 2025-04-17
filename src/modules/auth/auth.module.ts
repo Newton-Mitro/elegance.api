@@ -36,7 +36,7 @@ import { PrismaVerifyTokenRepository } from './infrastructure/repositories/prism
         return {
           secret: jwtConfig.secret,
           signOptions: {
-            expiresIn: jwtConfig.exp,
+            expiresIn: jwtConfig.exp ?? '1h',
             audience: jwtConfig.audience,
             issuer: jwtConfig.issuer,
             subject: 'access-token',

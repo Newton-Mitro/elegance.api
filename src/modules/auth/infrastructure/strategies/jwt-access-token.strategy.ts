@@ -13,12 +13,13 @@ export class JwtAccessTokenStrategy implements IJwtService {
     private configService: ConfigService,
   ) {}
 
-  async sign(payload: any): Promise<string> {
+  async sign(payload: AuthUserDto): Promise<string> {
+    console.log('SIGNING PAYLOAD:', payload);
     try {
       const jwt = this.configService.get<JwtConfig>('jwt')!;
       const refreshToken = await this.jwtService.signAsync(payload, {
         secret: jwt.secret,
-        expiresIn: jwt.exp,
+        expiresIn: jwt.exp ?? '1h',
         subject: 'refresh-token',
         issuer: jwt.issuer,
         audience: jwt.audience,

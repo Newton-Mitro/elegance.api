@@ -3,11 +3,14 @@ import { IUserRepository } from '../../../user/domain/repositories/user.reposito
 import { RefreshTokenDto } from '../dto/refresh-token.dto';
 import { JwtRefreshTokenStrategy } from '../../infrastructure/strategies/jwt-refresh-token.strategy';
 import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
+import { JwtAccessTokenStrategy } from '../../infrastructure/strategies/jwt-access-token.strategy';
+import { AuthUserMapper } from '../mappers/auth-user.mapper';
 
 @Injectable()
 export class RefreshTokenUseCase {
   constructor(
     private readonly jwtRefreshTokenStrategy: JwtRefreshTokenStrategy,
+    private readonly jwtAccessTokenStrategy: JwtAccessTokenStrategy,
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
   ) {}
@@ -25,9 +28,9 @@ export class RefreshTokenUseCase {
         throw new UnauthorizedException();
       }
 
-      const payload = decodedUser;
+      const payload = AuthUserMapper.toAuthUserDto(user);
 
-      const newAccessToken = await this.jwtRefreshTokenStrategy.sign(payload);
+      const newAccessToken = await this.jwtAccessTokenStrategy.sign(payload);
 
       return { accessToken: newAccessToken };
     } catch {

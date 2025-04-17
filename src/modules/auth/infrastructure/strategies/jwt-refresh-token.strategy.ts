@@ -13,7 +13,7 @@ export class JwtRefreshTokenStrategy implements IJwtService {
     private configService: ConfigService,
   ) {}
 
-  async sign(payload: any): Promise<string> {
+  async sign(payload: AuthUserDto): Promise<string> {
     try {
       const jwt = this.configService.get<JwtConfig>('jwt')!;
       const refreshToken = await this.jwtService.signAsync(payload, {
