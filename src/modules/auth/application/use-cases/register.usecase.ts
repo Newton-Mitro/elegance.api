@@ -4,7 +4,6 @@ import { IUserRepository } from '../../../user/domain/repositories/user.reposito
 import { PasswordHasherService } from '../../domain/services/password-hasher.service';
 import { UserEntity } from '../../../user/domain/entities/user.entity';
 import { UserStatus } from '@prisma/client';
-import { Email } from '../../../user/domain/value-objects/email.vo';
 import { IUserRoleRepository } from '../../../user/domain/repositories/user-role.repository';
 import { UserRoleEntity } from '../../../user/domain/entities/user-role.entity';
 import { IRoleRepository } from '../../../user/domain/repositories/role.repository';
@@ -13,6 +12,8 @@ import { UserRegisteredEvent } from '../../domain/events/user-registered.event';
 import { randomUUID } from 'crypto';
 import { IVerifyTokenRepository } from '../../domain/interfaces/verify-token.repository';
 import { VerifyTokenEntity } from '../../domain/entities/verify-token.entity';
+import { isEmail } from 'class-validator';
+import { UserAlreadyRegisteredException } from '../../../../core/exceptions/user-already-registered.exception';
 
 @Injectable()
 export class RegisterUseCase {
@@ -30,14 +31,16 @@ export class RegisterUseCase {
   ) {}
 
   async execute(dto: RegisterDto) {
-    const phoneExists = await this.userRepository.findByPhone(dto.phone);
-    if (phoneExists) throw new Error('Phone already registered');
+    const user = isEmail(dto.identifier)
+      ? await this.userRepository.findByEmail(dto.identifier)
+      : await this.userRepository.findByPhone(dto.identifier);
+
+    if (user) throw new UserAlreadyRegisteredException();
 
     const hashedPassword = await this.hasher.hash(dto.password);
     const newUser = UserEntity.create({
-      name: dto.fullName,
-      email: dto.email ? Email.create(dto.email) : undefined,
-      phone: dto.phone,
+      name: dto.name,
+      phone: dto.identifier,
       password: hashedPassword,
       status: UserStatus.INACTIVE,
     });

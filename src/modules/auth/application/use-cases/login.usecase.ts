@@ -9,6 +9,7 @@ import { LoginResponseDto } from '../dto/login-response.dto';
 import { UserMapper } from '../../../user/application/mappers/user-dto.mapper';
 import { IUserRoleRepository } from '../../../user/domain/repositories/user-role.repository';
 import { RoleDtoMapper } from '../../../user/application/mappers/role.mapper';
+import { EmailNotVerifiedException } from '../../../../core/exceptions/email-not-verified.exception';
 
 @Injectable()
 export class LoginUseCase {
@@ -29,6 +30,10 @@ export class LoginUseCase {
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (!user.isActive()) {
+      throw new EmailNotVerifiedException();
     }
 
     const passwordValid = await this.passwordHasherService.compare(

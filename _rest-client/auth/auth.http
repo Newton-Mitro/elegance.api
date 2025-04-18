@@ -3,10 +3,9 @@ POST http://localhost:3000/auth/register
 Content-Type: application/json
 
 {
-  "fullName": "John Doe",
-  "phone": "0123456789",
-  "password": "newPassword123",
-  "email": "john@example.com"
+  "name": "John Doe",
+  "identifier": "0123456789",
+  "password": "newPassword123"
 }
 
 ###
@@ -49,6 +48,16 @@ Content-Type: application/json
 
 ###
 
+### Forgot Password
+POST http://localhost:3000/auth/send-verification-link
+Content-Type: application/json
+
+{
+  "identifier": "0123456789"
+}
+
+###
+
 ### Reset Password
 POST http://localhost:3000/auth/reset-password
 Content-Type: application/json
@@ -67,7 +76,7 @@ Content-Type: application/json
 
 {
   "email": "john@example.com",
-  "token": "verify_token_here"
+  "token": "bea4dba3-d06d-4d17-bf07-35e718f42f60"
 }
 
 ###

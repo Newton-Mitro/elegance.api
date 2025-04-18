@@ -204,7 +204,7 @@ model Invoice {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
-  vatPercentage Float
+  vatPercentage Decimal @default(0)
   vatAmount     Decimal
 
   refunds     Refund[]
@@ -291,6 +291,7 @@ model Product {
   price       Decimal
   stock       Int // Available stock
   categoryId  String
+  vatRate     Decimal  @default(0) // different for each product
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -551,4 +552,21 @@ model AuditLog {
 
   // Relationship
   user User @relation(fields: [actionTakenBy], references: [id])
+}
+
+enum SettingType {
+  APPLICATION
+  EMAIL
+  SMS
+  VAT
+  DISCOUNT
+}
+
+model Setting {
+  id        String      @id @default(uuid())
+  type      SettingType
+  key       String      @unique
+  value     String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 }

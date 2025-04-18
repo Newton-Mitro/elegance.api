@@ -42,7 +42,7 @@ export class ForgotPasswordUseCase {
 
     if (user.email) {
       this.eventEmitter.emit(
-        'user.registered',
+        'forgot.password',
         new UserRegisteredEvent(
           user.id.toString(),
           user.name ?? 'Customer',

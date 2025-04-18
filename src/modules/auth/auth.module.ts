@@ -24,7 +24,8 @@ import { AuthGuard } from './presentation/guards/auth.guard';
 import { RolesGuard } from './presentation/guards/roles.guard';
 import { WelcomeEmailListener } from './infrastructure/listeners/welcome-email.listener';
 import { ResetPasswordListener } from './infrastructure/listeners/reset-password.listener';
-import { VerifyEmailListener } from './infrastructure/listeners/verify-email.listener';
+import { SendVerificationLinkListener } from './infrastructure/listeners/send-verification-link.listener';
+import { SendVerificationLinkUseCase } from './application/use-cases/send-verification-link.usecase';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { VerifyEmailListener } from './infrastructure/listeners/verify-email.lis
     RegisterUseCase,
     LogoutUseCase,
     ForgotPasswordUseCase,
+    SendVerificationLinkUseCase,
     RefreshTokenUseCase,
     ResetPasswordUseCase,
     VerifyEmailUseCase,
@@ -84,7 +86,7 @@ import { VerifyEmailListener } from './infrastructure/listeners/verify-email.lis
     },
     WelcomeEmailListener,
     ResetPasswordListener,
-    VerifyEmailListener,
+    SendVerificationLinkListener,
   ],
   controllers: [AuthController],
 })

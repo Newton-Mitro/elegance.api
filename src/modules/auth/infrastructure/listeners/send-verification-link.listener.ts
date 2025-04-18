@@ -4,10 +4,10 @@ import { UserRegisteredEvent } from '../../domain/events/user-registered.event';
 import { TemplateEngine } from '../../../../core/email/template.engine';
 import { NotificationType } from '../../../notification/application/types/notification-type.enum';
 import { NotifierService } from '../../../notification/infrastructure/services/notifier.service';
-import { VerifyEmailEvent } from '../../domain/events/verify-email.event';
+import { SendVerificationLinkEvent } from '../../domain/events/send-verification-link.event';
 
 @Injectable()
-export class VerifyEmailListener {
+export class SendVerificationLinkListener {
   constructor(private readonly notifierService: NotifierService) {}
 
   @OnEvent('user.registered')
@@ -29,8 +29,8 @@ export class VerifyEmailListener {
     }
   }
 
-  @OnEvent('verify.email')
-  async handleResendVerificationLink(event: VerifyEmailEvent) {
+  @OnEvent('send-verify.email')
+  async handleResendVerificationLink(event: SendVerificationLinkEvent) {
     // Send welcome email
     console.log(`Sending welcome email to ${event.email}`);
     const html = TemplateEngine.render('verify-email', {
