@@ -54,7 +54,7 @@ DATABASE_URL="file:./dev.db"
 For MySQL:
 
 ```ini
-DATABASE_URL="mysql://username:password@localhost:3306/beautyparlor"
+DATABASE_URL="mysql://username:password@localhost:3306/elegance"
 ```
 
 **4. Generate Prisma client**
@@ -70,7 +70,7 @@ npx prisma migrate dev --name init
 You can seed the database with some initial data (services, products, categories) using the following command:
 
 ```bash
-npx prisma db seed
+npm run seed
 ```
 
 ### Running the Application
