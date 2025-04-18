@@ -4,10 +4,11 @@ import { PasswordHasherService } from '../../domain/services/password-hasher.ser
 import { LoginDto } from '../dto/login.dto';
 import { JwtAccessTokenStrategy } from '../../infrastructure/strategies/jwt-access-token.strategy';
 import { JwtRefreshTokenStrategy } from '../../infrastructure/strategies/jwt-refresh-token.strategy';
-import { AuthUserDto } from '../dto/auth-user.dto';
 import { isEmail } from 'class-validator';
 import { LoginResponseDto } from '../dto/login-response.dto';
-import { AuthUserMapper } from '../mappers/auth-user.mapper';
+import { UserMapper } from '../../../user/application/mappers/user-dto.mapper';
+import { IUserRoleRepository } from '../../../user/domain/repositories/user-role.repository';
+import { RoleDtoMapper } from '../../../user/application/mappers/role.mapper';
 
 @Injectable()
 export class LoginUseCase {
@@ -17,6 +18,8 @@ export class LoginUseCase {
     private readonly jwtAccessTokenStrategy: JwtAccessTokenStrategy,
     private readonly jwtRefreshTokenStrategy: JwtRefreshTokenStrategy,
     private readonly passwordHasherService: PasswordHasherService,
+    @Inject('IUserRoleRepository')
+    private readonly userRoleRepository: IUserRoleRepository,
   ) {}
 
   async execute(dto: LoginDto): Promise<LoginResponseDto> {
@@ -37,19 +40,19 @@ export class LoginUseCase {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload: AuthUserDto = {
-      id: user.id.toString(),
-      name: user.name,
-      phone: user.phone,
-      email: user.email?.value,
-      profilePictureUrl: user.profilePictureUrl,
-    };
+    const roles = await this.userRoleRepository.getUserRoles(
+      user.id.toString(),
+    );
 
-    const accessToken = await this.jwtAccessTokenStrategy.sign(payload);
-    const refreshToken = await this.jwtRefreshTokenStrategy.sign(payload);
+    const userDto = UserMapper.toDto(user);
+    const rolesDtos = RoleDtoMapper.toDtos(roles);
+    const userAggregateDto = { ...userDto, roles: rolesDtos };
 
-    const userDto = AuthUserMapper.toAuthUserDto(user);
+    const accessToken =
+      await this.jwtAccessTokenStrategy.sign(userAggregateDto);
+    const refreshToken =
+      await this.jwtRefreshTokenStrategy.sign(userAggregateDto);
 
-    return { accessToken, refreshToken, user: userDto };
+    return { accessToken, refreshToken, user: userAggregateDto };
   }
 }

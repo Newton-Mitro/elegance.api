@@ -4,9 +4,9 @@ import { IJwtService } from '../../domain/interfaces/jwt-service.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtConfig } from '../../../../config/types/config.type';
-import { AuthUserDto } from '../../application/dto/auth-user.dto';
 import { IRefreshTokenRepository } from '../../domain/interfaces/refresh-token.repository';
 import { RefreshTokenEntity } from '../../domain/entities/refresh-token.entity';
+import { UserAggregateDto } from '../../../user/application/dto/user-aggregate.dto';
 
 @Injectable()
 export class JwtRefreshTokenStrategy implements IJwtService {
@@ -17,7 +17,7 @@ export class JwtRefreshTokenStrategy implements IJwtService {
     private configService: ConfigService,
   ) {}
 
-  async sign(payload: AuthUserDto): Promise<string> {
+  async sign(payload: UserAggregateDto): Promise<string> {
     try {
       const jwt = this.configService.get<JwtConfig>('jwt')!;
       const refreshToken = await this.jwtService.signAsync(payload, {
@@ -43,7 +43,7 @@ export class JwtRefreshTokenStrategy implements IJwtService {
     }
   }
 
-  async verify(token: string): Promise<AuthUserDto> {
+  async verify(token: string): Promise<UserAggregateDto> {
     try {
       const jwt = this.configService.get<JwtConfig>('jwt')!;
       if (!token || typeof token !== 'string') {

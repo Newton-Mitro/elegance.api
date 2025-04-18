@@ -2,12 +2,12 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetTokenEntity } from '../../domain/entities/reset-token.entity';
-import { TemplateEngine } from '../../../../core/email/template.engine';
 import { IResetTokenRepository } from '../../domain/interfaces/reset-token.repository';
 import { NotifierService } from '../../../notification/infrastructure/services/notifier.service';
-import { NotificationType } from '../../../notification/application/types/notification-type.enum';
 import { isEmail } from 'class-validator';
 import { randomUUID } from 'crypto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { UserRegisteredEvent } from '../../domain/events/user-registered.event';
 
 @Injectable()
 export class ForgotPasswordUseCase {
@@ -17,6 +17,7 @@ export class ForgotPasswordUseCase {
     private readonly notifierService: NotifierService, // abstracted email sender
     @Inject('IResetTokenRepository')
     private readonly resetTokenRepository: IResetTokenRepository, // for creating/validating tokens
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async execute(dto: ForgotPasswordDto): Promise<string> {
@@ -39,18 +40,16 @@ export class ForgotPasswordUseCase {
 
     await this.resetTokenRepository.save(resetToken);
 
-    const html = TemplateEngine.render('reset-password', {
-      name: user.name,
-      resetLink: `https://yourapp.com/verify?token=${token}`,
-    });
-
     if (user.email) {
-      await this.notifierService.sendNotification({
-        to: user.email.value,
-        subject: 'Forgot Password Token',
-        body: html,
-        type: NotificationType.EMAIL,
-      });
+      this.eventEmitter.emit(
+        'user.registered',
+        new UserRegisteredEvent(
+          user.id.toString(),
+          user.name ?? 'Customer',
+          user.email.value,
+          token,
+        ),
+      );
     }
 
     return token;

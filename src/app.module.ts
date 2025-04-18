@@ -20,6 +20,7 @@ import configuration from './config/configuration';
 import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { PrismaService } from './core/prisma/prisma.service';
 import { PrismaModule } from './core/prisma/prisma.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { PrismaModule } from './core/prisma/prisma.module';
       envFilePath: ['.env', '.env.development.local', '.env.production'],
       load: [configuration],
     }),
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [PrismaService],

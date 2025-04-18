@@ -1,6 +1,6 @@
-import { AuthUserDto } from '../../application/dto/auth-user.dto';
+import { UserAggregateDto } from '../../../user/application/dto/user-aggregate.dto';
 
 export interface IJwtService {
-  sign(payload: AuthUserDto): Promise<string>;
-  verify(token: string): Promise<AuthUserDto>;
+  sign(payload: UserAggregateDto): Promise<string>;
+  verify(token: string): Promise<UserAggregateDto>;
 }

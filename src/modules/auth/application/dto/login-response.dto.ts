@@ -1,7 +1,7 @@
-import { AuthUserDto } from './auth-user.dto';
+import { UserAggregateDto } from '../../../user/application/dto/user-aggregate.dto';
 
 export interface LoginResponseDto {
   accessToken: string;
   refreshToken: string;
-  user: AuthUserDto;
+  user: UserAggregateDto;
 }

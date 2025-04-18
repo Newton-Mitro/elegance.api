@@ -2,13 +2,13 @@ import { Entity, EntityBaseProps } from '../../../../core/entities/entity';
 import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
 
 export interface UserRoleProps extends EntityBaseProps {
-  userId: UniqueEntityID;
-  roleId: UniqueEntityID;
+  userId: string;
+  roleId: string;
   assignedAt: Date;
-  assignedBy: UniqueEntityID;
-  revokedAt?: Date | null;
-  revokedBy?: UniqueEntityID | null;
-  reason?: string | null;
+  assignedBy?: string;
+  revokedAt?: Date;
+  revokedBy?: string;
+  reason?: string;
 }
 
 export class UserRoleEntity extends Entity<UserRoleProps> {
@@ -20,11 +20,11 @@ export class UserRoleEntity extends Entity<UserRoleProps> {
     return new UserRoleEntity(props, id);
   }
 
-  get userId(): UniqueEntityID {
+  get userId(): string {
     return this.props.userId;
   }
 
-  get roleId(): UniqueEntityID {
+  get roleId(): string {
     return this.props.roleId;
   }
 
@@ -32,7 +32,7 @@ export class UserRoleEntity extends Entity<UserRoleProps> {
     return this.props.assignedAt;
   }
 
-  get assignedBy(): UniqueEntityID {
+  get assignedBy(): string | undefined {
     return this.props.assignedBy;
   }
 
@@ -40,7 +40,7 @@ export class UserRoleEntity extends Entity<UserRoleProps> {
     return this.props.revokedAt;
   }
 
-  get revokedBy(): UniqueEntityID | null | undefined {
+  get revokedBy(): string | null | undefined {
     return this.props.revokedBy;
   }
 
@@ -52,15 +52,15 @@ export class UserRoleEntity extends Entity<UserRoleProps> {
     return !!this.props.revokedAt;
   }
 
-  public revoke(by: UniqueEntityID, reason?: string): void {
+  public revoke(by: string, reason?: string): void {
     this.props.revokedAt = new Date();
     this.props.revokedBy = by;
     this.props.reason = reason;
   }
 
-  public reassign(by: UniqueEntityID, reason?: string): void {
-    this.props.revokedAt = null;
-    this.props.revokedBy = null;
+  public reassign(by: string, reason?: string): void {
+    this.props.revokedAt = undefined;
+    this.props.revokedBy = undefined;
     this.props.reason = reason;
     this.props.assignedAt = new Date();
     this.props.assignedBy = by;

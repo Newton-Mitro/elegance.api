@@ -22,6 +22,9 @@ import { PrismaVerifyTokenRepository } from './infrastructure/repositories/prism
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './presentation/guards/auth.guard';
 import { RolesGuard } from './presentation/guards/roles.guard';
+import { WelcomeEmailListener } from './infrastructure/listeners/welcome-email.listener';
+import { ResetPasswordListener } from './infrastructure/listeners/reset-password.listener';
+import { VerifyEmailListener } from './infrastructure/listeners/verify-email.listener';
 
 @Module({
   imports: [
@@ -79,6 +82,9 @@ import { RolesGuard } from './presentation/guards/roles.guard';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    WelcomeEmailListener,
+    ResetPasswordListener,
+    VerifyEmailListener,
   ],
   controllers: [AuthController],
 })

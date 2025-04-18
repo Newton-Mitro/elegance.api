@@ -44,18 +44,20 @@ export class AuthController {
     try {
       const result = await this.registerUseCase.execute(dto);
       return res.status(HttpStatus.CREATED).json({
+        statusCode: HttpStatus.CREATED,
         message: 'User successfully registered.',
         data: result,
       });
     } catch (error) {
       if (error instanceof Error) {
         return res.status(HttpStatus.BAD_REQUEST).json({
+          statusCode: HttpStatus.BAD_REQUEST,
           message: 'Registration failed.',
           error: error.message,
         });
       }
-
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'An unknown error occurred.',
       });
     }
@@ -67,18 +69,20 @@ export class AuthController {
     try {
       const result = await this.loginUseCase.execute(dto);
       return res.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
         message: 'Login successful.',
         data: result,
       });
     } catch (error) {
       if (error instanceof Error) {
         return res.status(HttpStatus.UNAUTHORIZED).json({
+          statusCode: HttpStatus.UNAUTHORIZED,
           message: 'Invalid credentials.',
           error: error.message,
         });
       }
-
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'An unknown error occurred.',
       });
     }
@@ -90,34 +94,36 @@ export class AuthController {
     try {
       const result = await this.refreshTokenUseCase.execute(dto);
       return res.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
         message: 'Token refreshed successfully.',
         data: result,
       });
     } catch (error) {
       if (error instanceof Error) {
         return res.status(HttpStatus.BAD_REQUEST).json({
+          statusCode: HttpStatus.BAD_REQUEST,
           message: 'Failed to refresh token.',
           error: error.message,
         });
       }
-
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'An unknown error occurred.',
       });
     }
   }
 
   @Get('me')
-  @Roles(Role.Admin, Role.Manager)
+  @Roles(Role.CUSTOMER, Role.ADMIN)
   getMe(@Req() req: Request, @Res() res: Response) {
     try {
       if (!req.user) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
           message: 'Failed to get user info.',
         });
       }
       const user = req.user;
-
       const payload = {
         id: user.id,
         name: user.name,
@@ -125,20 +131,21 @@ export class AuthController {
         email: user.email,
         profilePictureUrl: user.profilePictureUrl,
       };
-
       return res.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
         message: 'User information retrieved successfully.',
         data: payload,
       });
     } catch (error) {
       if (error instanceof Error) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
           message: 'Failed to get user info.',
           error: error.message,
         });
       }
-
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'An unknown error occurred.',
       });
     }
@@ -152,17 +159,19 @@ export class AuthController {
       }
       await this.logoutUsecase.execute(req.user?.id);
       return res.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
         message: 'Logged out successfully.',
       });
     } catch (error) {
       if (error instanceof Error) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
           message: 'Logout failed.',
           error: error.message,
         });
       }
-
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'An unknown error occurred.',
       });
     }
@@ -174,18 +183,20 @@ export class AuthController {
     try {
       const result = await this.forgotPasswordUseCase.execute(dto);
       return res.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
         message: 'Password reset link sent.',
         data: result,
       });
     } catch (error) {
       if (error instanceof Error) {
         return res.status(HttpStatus.BAD_REQUEST).json({
+          statusCode: HttpStatus.BAD_REQUEST,
           message: 'Failed to send password reset link.',
           error: error.message,
         });
       }
-
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'An unknown error occurred.',
       });
     }
@@ -197,17 +208,19 @@ export class AuthController {
     try {
       await this.resetPasswordUseCase.execute(dto);
       return res.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
         message: 'Password has been reset successfully.',
       });
     } catch (error) {
       if (error instanceof Error) {
         return res.status(HttpStatus.BAD_REQUEST).json({
+          statusCode: HttpStatus.BAD_REQUEST,
           message: 'Failed to reset password.',
           error: error.message,
         });
       }
-
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'An unknown error occurred.',
       });
     }
@@ -219,17 +232,19 @@ export class AuthController {
     try {
       await this.verifyEmailUseCase.execute(dto);
       return res.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
         message: 'Email has been verified successfully.',
       });
     } catch (error) {
       if (error instanceof Error) {
         return res.status(HttpStatus.BAD_REQUEST).json({
+          statusCode: HttpStatus.BAD_REQUEST,
           message: 'Email verification failed.',
           error: error.message,
         });
       }
-
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'An unknown error occurred.',
       });
     }

@@ -13,7 +13,6 @@ export class UserEntityMapper {
         profilePictureUrl: raw.profilePictureUrl ?? undefined,
         password: raw.password,
         status: raw.status,
-
         createdAt: raw.createdAt,
       },
       new UniqueEntityID(raw.id),

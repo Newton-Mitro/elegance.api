@@ -34,6 +34,9 @@ export class RefreshTokenUseCase {
         phone: decodedUser.phone,
         email: decodedUser.email,
         profilePictureUrl: decodedUser.profilePictureUrl,
+        status: decodedUser.status,
+        createdAt: decodedUser.createdAt,
+        updatedAt: decodedUser.updatedAt,
         roles: decodedUser.roles,
       };
 

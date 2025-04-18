@@ -4,7 +4,7 @@ import { IJwtService } from '../../domain/interfaces/jwt-service.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtConfig } from '../../../../config/types/config.type';
-import { AuthUserDto } from '../../application/dto/auth-user.dto';
+import { UserAggregateDto } from '../../../user/application/dto/user-aggregate.dto';
 
 @Injectable()
 export class JwtAccessTokenStrategy implements IJwtService {
@@ -13,7 +13,7 @@ export class JwtAccessTokenStrategy implements IJwtService {
     private configService: ConfigService,
   ) {}
 
-  async sign(payload: AuthUserDto): Promise<string> {
+  async sign(payload: UserAggregateDto): Promise<string> {
     console.log('SIGNING PAYLOAD:', payload);
     try {
       const jwt = this.configService.get<JwtConfig>('jwt')!;
@@ -31,7 +31,7 @@ export class JwtAccessTokenStrategy implements IJwtService {
     }
   }
 
-  async verify(token: string): Promise<AuthUserDto> {
+  async verify(token: string): Promise<UserAggregateDto> {
     try {
       const jwt = this.configService.get<JwtConfig>('jwt')!;
       return this.jwtService.verifyAsync(token, {

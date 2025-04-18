@@ -69,7 +69,7 @@ model UserRoles {
 
   // Audit Trail Fields
   assignedAt DateTime @default(now())
-  assignedBy String // The ID of the admin or user who assigned the role
+  assignedBy String? // The ID of the admin or user who assigned the role
 
   revokedAt DateTime? // Nullable: if revoked
   revokedBy String? // Nullable: if revoked
