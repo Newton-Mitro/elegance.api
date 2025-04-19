@@ -1,5 +1,6 @@
 // src/common/exceptions/no-appointment-slot.exception.ts
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionName } from '../enums/exception.enum';
 
 export class NoAppointmentSlotAvailableException extends HttpException {
   constructor() {
@@ -7,7 +8,7 @@ export class NoAppointmentSlotAvailableException extends HttpException {
       {
         statusCode: HttpStatus.BAD_REQUEST,
         message: 'No available appointment slots.',
-        error: 'no_appointment_slot_available',
+        error: ExceptionName.NoAppointmentSlotAvailable,
       },
       HttpStatus.BAD_REQUEST,
     );

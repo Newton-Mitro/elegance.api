@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionName } from '../enums/exception.enum';
 
 export class UserAccountNotVerifiedException extends HttpException {
   constructor() {
@@ -6,7 +7,7 @@ export class UserAccountNotVerifiedException extends HttpException {
       {
         statusCode: HttpStatus.FORBIDDEN,
         message: 'User account not verified',
-        error: 'user_account_not_verified',
+        error: ExceptionName.UserAccountNotVerified,
       },
       HttpStatus.FORBIDDEN,
     );

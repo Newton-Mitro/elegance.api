@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionName } from '../enums/exception.enum';
 
 export class UserAlreadyRegisteredException extends HttpException {
   constructor() {
@@ -6,7 +7,7 @@ export class UserAlreadyRegisteredException extends HttpException {
       {
         statusCode: HttpStatus.CONFLICT,
         message: 'User is already registered',
-        error: 'user_already_registered',
+        error: ExceptionName.UserAlreadyRegistered,
       },
       HttpStatus.CONFLICT,
     );

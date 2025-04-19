@@ -7,6 +7,7 @@ import { JwtConfig } from '../../../../config/types/config.type';
 import { IRefreshTokenRepository } from '../../domain/interfaces/refresh-token.repository';
 import { RefreshTokenEntity } from '../../domain/entities/refresh-token.entity';
 import { UserAggregateDto } from '../../../user/application/dto/user-aggregate.dto';
+import { InvalidTokenException } from '../../../../core/exceptions/invalid-token.exception';
 
 @Injectable()
 export class JwtRefreshTokenStrategy implements IJwtService {
@@ -39,7 +40,7 @@ export class JwtRefreshTokenStrategy implements IJwtService {
       return refreshToken;
     } catch (err) {
       console.log(err);
-      throw new UnauthorizedException('Token invalid or expired');
+      throw new InvalidTokenException();
     }
   }
 
@@ -59,7 +60,7 @@ export class JwtRefreshTokenStrategy implements IJwtService {
       });
     } catch (err) {
       console.log(err);
-      throw new UnauthorizedException('Token invalid or expired');
+      throw new InvalidTokenException();
     }
   }
 }

@@ -1,5 +1,6 @@
 // src/common/exceptions/invalid-token.exception.ts
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionName } from '../enums/exception.enum';
 
 export class InvalidTokenException extends HttpException {
   constructor() {
@@ -7,7 +8,7 @@ export class InvalidTokenException extends HttpException {
       {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'The authentication token is invalid or expired.',
-        error: 'invalid_token',
+        error: ExceptionName.InvalidToken,
       },
       HttpStatus.UNAUTHORIZED,
     );

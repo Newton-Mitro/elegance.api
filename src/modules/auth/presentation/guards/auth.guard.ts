@@ -1,14 +1,10 @@
 // auth.guard.ts
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { JwtAccessTokenStrategy } from '../../infrastructure/strategies/jwt-access-token.strategy';
 import { IS_PUBLIC_KEY } from '../../../../core/decorators/public.decorator';
+import { InvalidTokenException } from '../../../../core/exceptions/invalid-token.exception';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -30,7 +26,7 @@ export class AuthGuard implements CanActivate {
     const authHeader = request.headers['authorization'];
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Missing or invalid token');
+      throw new InvalidTokenException();
     }
 
     const token = authHeader.replace('Bearer ', '').trim();
@@ -41,7 +37,7 @@ export class AuthGuard implements CanActivate {
       return true;
     } catch (err) {
       console.log(err);
-      throw new UnauthorizedException('Token invalid or expired');
+      throw new InvalidTokenException();
     }
   }
 }

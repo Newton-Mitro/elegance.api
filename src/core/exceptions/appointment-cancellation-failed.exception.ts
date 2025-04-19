@@ -1,5 +1,6 @@
 // src/common/exceptions/appointment-cancellation-failed.exception.ts
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionName } from '../enums/exception.enum';
 
 export class AppointmentCancellationFailedException extends HttpException {
   constructor() {
@@ -8,7 +9,7 @@ export class AppointmentCancellationFailedException extends HttpException {
         statusCode: HttpStatus.BAD_REQUEST,
         message:
           'Appointment cancellation failed. The appointment might have already passed or cannot be cancelled.',
-        error: 'appointment_cancellation_failed',
+        error: ExceptionName.AppointmentCancellationFailed,
       },
       HttpStatus.BAD_REQUEST,
     );

@@ -1,5 +1,6 @@
 // src/common/exceptions/product-not-available.exception.ts
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionName } from '../enums/exception.enum';
 
 export class ProductNotAvailableException extends HttpException {
   constructor() {
@@ -7,7 +8,7 @@ export class ProductNotAvailableException extends HttpException {
       {
         statusCode: HttpStatus.BAD_REQUEST,
         message: 'The product is not available.',
-        error: 'product_not_available',
+        error: ExceptionName.ProductNoAvailable,
       },
       HttpStatus.BAD_REQUEST,
     );

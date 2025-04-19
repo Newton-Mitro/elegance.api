@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IJwtService } from '../../domain/interfaces/jwt-service.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtConfig } from '../../../../config/types/config.type';
 import { UserAggregateDto } from '../../../user/application/dto/user-aggregate.dto';
+import { InvalidTokenException } from '../../../../core/exceptions/invalid-token.exception';
 
 @Injectable()
 export class JwtAccessTokenStrategy implements IJwtService {
@@ -27,7 +28,7 @@ export class JwtAccessTokenStrategy implements IJwtService {
       return refreshToken;
     } catch (err) {
       console.log(err);
-      throw new UnauthorizedException('Token invalid or expired');
+      throw new InvalidTokenException();
     }
   }
 
@@ -41,7 +42,7 @@ export class JwtAccessTokenStrategy implements IJwtService {
       });
     } catch (err) {
       console.log(err);
-      throw new UnauthorizedException('Token invalid or expired');
+      throw new InvalidTokenException();
     }
   }
 }

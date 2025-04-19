@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionName } from '../enums/exception.enum';
 
 export class AccountAlreadyVerifiedException extends HttpException {
   constructor() {
@@ -6,7 +7,7 @@ export class AccountAlreadyVerifiedException extends HttpException {
       {
         statusCode: HttpStatus.FORBIDDEN,
         message: 'Account already verified',
-        error: 'account_already_verified',
+        error: ExceptionName.AccountAlreadyVerified,
       },
       HttpStatus.FORBIDDEN,
     );

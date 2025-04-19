@@ -1,5 +1,6 @@
 // src/common/exceptions/invalid-credentials.exception.ts
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionName } from '../enums/exception.enum';
 
 export class InvalidCredentialsException extends HttpException {
   constructor() {
@@ -7,7 +8,7 @@ export class InvalidCredentialsException extends HttpException {
       {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Invalid credentials provided.',
-        error: 'invalid_credentials',
+        error: ExceptionName.InvalidCredentials,
       },
       HttpStatus.UNAUTHORIZED,
     );

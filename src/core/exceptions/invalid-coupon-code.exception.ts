@@ -1,5 +1,6 @@
 // src/common/exceptions/invalid-coupon-code.exception.ts
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionName } from '../enums/exception.enum';
 
 export class InvalidCouponCodeException extends HttpException {
   constructor() {
@@ -7,7 +8,7 @@ export class InvalidCouponCodeException extends HttpException {
       {
         statusCode: HttpStatus.BAD_REQUEST,
         message: 'The coupon code is invalid or expired.',
-        error: 'invalid_coupon_code',
+        error: ExceptionName.InvalidCouponCode,
       },
       HttpStatus.BAD_REQUEST,
     );
