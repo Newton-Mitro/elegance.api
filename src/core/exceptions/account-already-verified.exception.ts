@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class EmailNotVerifiedException extends HttpException {
+export class AccountAlreadyVerifiedException extends HttpException {
   constructor() {
     super(
       {
         statusCode: HttpStatus.FORBIDDEN,
-        message: 'Email not verified',
-        error: 'email_not_verified',
+        message: 'Account already verified',
+        error: 'account_already_verified',
       },
       HttpStatus.FORBIDDEN,
     );

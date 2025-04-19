@@ -3,6 +3,7 @@ import { RoleEntity } from '../../domain/entities/role.entity';
 import { IRoleRepository } from '../../domain/repositories/role.repository';
 import { PrismaService } from '../../../../core/prisma/prisma.service';
 import { RoleEntityMapper } from '../mappers/role.mapper';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PrismaRoleRepository implements IRoleRepository {
@@ -23,8 +24,12 @@ export class PrismaRoleRepository implements IRoleRepository {
     return roles.map((role) => RoleEntityMapper.toDomain(role));
   }
 
-  async create(role: RoleEntity): Promise<RoleEntity> {
-    const created = await this.prisma.role.create({
+  async create(
+    role: RoleEntity,
+    tx?: Prisma.TransactionClient,
+  ): Promise<RoleEntity> {
+    const client = tx ?? this.prisma;
+    const created = await client.role.create({
       data: {
         id: role.id.toString(),
         name: role.name,
@@ -34,8 +39,12 @@ export class PrismaRoleRepository implements IRoleRepository {
     return RoleEntityMapper.toDomain(created);
   }
 
-  async update(role: RoleEntity): Promise<RoleEntity> {
-    const updated = await this.prisma.role.update({
+  async update(
+    role: RoleEntity,
+    tx?: Prisma.TransactionClient,
+  ): Promise<RoleEntity> {
+    const client = tx ?? this.prisma;
+    const updated = await client.role.update({
       where: { id: role.id.toString() },
       data: {
         name: role.name,
@@ -45,7 +54,8 @@ export class PrismaRoleRepository implements IRoleRepository {
     return RoleEntityMapper.toDomain(updated);
   }
 
-  async delete(id: string): Promise<void> {
-    await this.prisma.role.delete({ where: { id } });
+  async delete(id: string, tx?: Prisma.TransactionClient): Promise<void> {
+    const client = tx ?? this.prisma;
+    await client.role.delete({ where: { id } });
   }
 }

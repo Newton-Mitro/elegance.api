@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { RegisterDto } from '../dto/register.dto';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { PasswordHasherService } from '../../domain/services/password-hasher.service';
@@ -14,6 +14,9 @@ import { IVerifyTokenRepository } from '../../domain/interfaces/verify-token.rep
 import { VerifyTokenEntity } from '../../domain/entities/verify-token.entity';
 import { isEmail } from 'class-validator';
 import { UserAlreadyRegisteredException } from '../../../../core/exceptions/user-already-registered.exception';
+import { PrismaService } from '../../../../core/prisma/prisma.service'; // import PrismaService
+import { Prisma } from '@prisma/client'; // for tx type
+import { ResourceNotFoundException } from '../../../../core/exceptions/resource-not-found.exception';
 
 @Injectable()
 export class RegisterUseCase {
@@ -28,6 +31,7 @@ export class RegisterUseCase {
     private readonly verifyTokenRepository: IVerifyTokenRepository,
     private readonly hasher: PasswordHasherService,
     private readonly eventEmitter: EventEmitter2,
+    private readonly prisma: PrismaService, // inject PrismaService
   ) {}
 
   async execute(dto: RegisterDto) {
@@ -38,46 +42,52 @@ export class RegisterUseCase {
     if (user) throw new UserAlreadyRegisteredException();
 
     const hashedPassword = await this.hasher.hash(dto.password);
-    const newUser = UserEntity.create({
-      name: dto.name,
-      phone: dto.identifier,
-      password: hashedPassword,
-      status: UserStatus.INACTIVE,
+
+    await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      // Create user
+      const newUser = UserEntity.create({
+        name: dto.name,
+        phone: dto.identifier,
+        password: hashedPassword,
+        status: UserStatus.INACTIVE,
+      });
+
+      await this.userRepository.save(newUser, tx);
+
+      const role = await this.roleRepository.findByName('CUSTOMER');
+      if (!role) throw new ResourceNotFoundException();
+
+      const userRole = UserRoleEntity.create({
+        userId: newUser.id.toString(),
+        roleId: role.id.toString(),
+        assignedAt: new Date(),
+        reason: 'On Registration',
+      });
+
+      await this.userRoleRepository.assignRoleToUser(userRole, tx);
+
+      const token = randomUUID();
+      const verifyTokenEntity = VerifyTokenEntity.create({
+        userId: newUser.id.toString(),
+        token,
+      });
+
+      await this.verifyTokenRepository.save(verifyTokenEntity, tx);
+
+      // Emit event *after* transaction completes
+      setImmediate(() => {
+        if (newUser.email) {
+          this.eventEmitter.emit(
+            'user.registered',
+            new UserRegisteredEvent(
+              newUser.id.toString(),
+              newUser.name ?? 'Customer',
+              newUser.email.value,
+              token,
+            ),
+          );
+        }
+      });
     });
-
-    await this.userRepository.save(newUser);
-    const role = await this.roleRepository.findByName('CUSTOMER');
-
-    if (!role) {
-      throw new NotFoundException();
-    }
-
-    const userRole = UserRoleEntity.create({
-      userId: newUser.id.toString(),
-      roleId: role.id.toString(),
-      assignedAt: new Date(),
-      reason: 'On Registration',
-    });
-
-    await this.userRoleRepository.assignRoleToUser(userRole);
-
-    const token = randomUUID();
-    const verifyTokenEntity = VerifyTokenEntity.create({
-      userId: newUser.id.toString(),
-      token: token,
-    });
-    await this.verifyTokenRepository.save(verifyTokenEntity);
-
-    if (newUser.email) {
-      this.eventEmitter.emit(
-        'user.registered',
-        new UserRegisteredEvent(
-          newUser.id.toString(),
-          newUser.name ?? 'Customer',
-          newUser.email.value,
-          token,
-        ),
-      );
-    }
   }
 }

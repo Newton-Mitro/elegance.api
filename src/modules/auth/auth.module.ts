@@ -10,7 +10,7 @@ import { LogoutUseCase } from './application/use-cases/logout.usecase';
 import { ForgotPasswordUseCase } from './application/use-cases/forgot-password.usecase';
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.usecase';
 import { ResetPasswordUseCase } from './application/use-cases/reset-password.usecase';
-import { VerifyEmailUseCase } from './application/use-cases/verify-account.usecase';
+import { VerifyUserAccountUseCase } from './application/use-cases/verify-user-account.usecase';
 import { JwtAccessTokenStrategy } from './infrastructure/strategies/jwt-access-token.strategy';
 import { JwtRefreshTokenStrategy } from './infrastructure/strategies/jwt-refresh-token.strategy';
 import { PrismaModule } from '../../core/prisma/prisma.module';
@@ -60,7 +60,7 @@ import { SendVerificationLinkUseCase } from './application/use-cases/send-verifi
     SendVerificationLinkUseCase,
     RefreshTokenUseCase,
     ResetPasswordUseCase,
-    VerifyEmailUseCase,
+    VerifyUserAccountUseCase,
     PasswordHasherService,
     JwtAccessTokenStrategy,
     JwtRefreshTokenStrategy,

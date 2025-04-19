@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetTokenEntity } from '../../domain/entities/reset-token.entity';
@@ -8,6 +8,7 @@ import { isEmail } from 'class-validator';
 import { randomUUID } from 'crypto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserRegisteredEvent } from '../../domain/events/user-registered.event';
+import { InstructionIfIdentifierExistsException } from '../../../../core/exceptions/instruction-if-identifier-exists.exception';
 
 @Injectable()
 export class ForgotPasswordUseCase {
@@ -27,9 +28,7 @@ export class ForgotPasswordUseCase {
 
     if (!user) {
       // Don't reveal if phone number exists
-      throw new NotFoundException(
-        'If the phone number exists, instructions will be sent.',
-      );
+      throw new InstructionIfIdentifierExistsException();
     }
 
     const token = randomUUID();

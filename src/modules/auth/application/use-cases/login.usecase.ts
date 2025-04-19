@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { PasswordHasherService } from '../../domain/services/password-hasher.service';
 import { LoginDto } from '../dto/login.dto';
@@ -9,7 +9,8 @@ import { LoginResponseDto } from '../dto/login-response.dto';
 import { UserMapper } from '../../../user/application/mappers/user-dto.mapper';
 import { IUserRoleRepository } from '../../../user/domain/repositories/user-role.repository';
 import { RoleDtoMapper } from '../../../user/application/mappers/role.mapper';
-import { EmailNotVerifiedException } from '../../../../core/exceptions/email-not-verified.exception';
+import { UserAccountNotVerifiedException } from '../../../../core/exceptions/user-account-not-verified.exception';
+import { InvalidCredentialsException } from '../../../../core/exceptions/invalid-credentials.exception';
 
 @Injectable()
 export class LoginUseCase {
@@ -29,11 +30,11 @@ export class LoginUseCase {
       : await this.userRepository.findByPhone(dto.identifier);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new InvalidCredentialsException();
     }
 
     if (!user.isActive()) {
-      throw new EmailNotVerifiedException();
+      throw new UserAccountNotVerifiedException();
     }
 
     const passwordValid = await this.passwordHasherService.compare(
@@ -42,7 +43,7 @@ export class LoginUseCase {
     );
 
     if (!passwordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new InvalidCredentialsException();
     }
 
     const roles = await this.userRoleRepository.getUserRoles(

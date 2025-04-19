@@ -1,13 +1,11 @@
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { ResetPasswordDto } from '../dto/reset-password.dto';
 import { PasswordHasherService } from '../../domain/services/password-hasher.service';
 import { IResetTokenRepository } from '../../domain/interfaces/reset-token.repository';
+import { InvalidTokenException } from '../../../../core/exceptions/invalid-token.exception';
+import { UserNotFoundException } from '../../../../core/exceptions/user-not-found.exception';
+import { AccountAlreadyVerifiedException } from '../../../../core/exceptions/account-already-verified.exception';
 
 @Injectable()
 export class ResetPasswordUseCase {
@@ -23,13 +21,16 @@ export class ResetPasswordUseCase {
     const resetToken = await this.resetTokenRepository.findByToken(dto.token); // throws if invalid
 
     if (!resetToken) {
-      throw new UnauthorizedException('Invalid token');
+      throw new InvalidTokenException();
     }
 
     const user = await this.userRepository.findByPhone(resetToken.phone);
 
     if (!user) {
-      throw new NotFoundException('User not found.');
+      throw new UserNotFoundException();
+    }
+    if (user.isActive()) {
+      throw new AccountAlreadyVerifiedException();
     }
 
     const hashedPassword = await this.passwordHasherService.hash(

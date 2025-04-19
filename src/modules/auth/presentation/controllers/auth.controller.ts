@@ -14,14 +14,14 @@ import { LoginDto } from '../../application/dto/login.dto';
 import { RefreshTokenDto } from '../../application/dto/refresh-token.dto';
 import { RegisterDto } from '../../application/dto/register.dto';
 import { ResetPasswordDto } from '../../application/dto/reset-password.dto';
-import { VerifyEmailDto } from '../../application/dto/verify-account.dto';
+import { VerifyUserAccountDto } from '../../application/dto/verify-account.dto';
 import { ForgotPasswordUseCase } from '../../application/use-cases/forgot-password.usecase';
 import { LoginUseCase } from '../../application/use-cases/login.usecase';
 import { LogoutUseCase } from '../../application/use-cases/logout.usecase';
 import { RefreshTokenUseCase } from '../../application/use-cases/refresh-token.usecase';
 import { RegisterUseCase } from '../../application/use-cases/register.usecase';
 import { ResetPasswordUseCase } from '../../application/use-cases/reset-password.usecase';
-import { VerifyEmailUseCase } from '../../application/use-cases/verify-account.usecase';
+import { VerifyUserAccountUseCase } from '../../application/use-cases/verify-user-account.usecase';
 import { Public } from '../../../../core/decorators/public.decorator';
 import { Roles } from '../../../../core/decorators/roles.decorator';
 import { Role } from '../../../../core/enums/role.enum';
@@ -37,7 +37,7 @@ export class AuthController {
     private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
     private readonly sendVerificationLinkUseCase: SendVerificationLinkUseCase,
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
-    private readonly verifyEmailUseCase: VerifyEmailUseCase,
+    private readonly verifyEmailUseCase: VerifyUserAccountUseCase,
     private readonly logoutUsecase: LogoutUseCase,
   ) {}
 
@@ -151,7 +151,7 @@ export class AuthController {
 
   @Public()
   @Post('verify-email')
-  async verifyEmail(@Body() dto: VerifyEmailDto, @Res() res: Response) {
+  async verifyEmail(@Body() dto: VerifyUserAccountDto, @Res() res: Response) {
     await this.verifyEmailUseCase.execute(dto);
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

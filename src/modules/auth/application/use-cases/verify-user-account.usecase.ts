@@ -1,16 +1,13 @@
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
-import { VerifyEmailDto } from '../dto/verify-account.dto';
+import { VerifyUserAccountDto } from '../dto/verify-account.dto';
 import { IVerifyTokenRepository } from '../../domain/interfaces/verify-token.repository';
 import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
+import { InvalidTokenException } from '../../../../core/exceptions/invalid-token.exception';
+import { UserNotFoundException } from '../../../../core/exceptions/user-not-found.exception';
 
 @Injectable()
-export class VerifyEmailUseCase {
+export class VerifyUserAccountUseCase {
   constructor(
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
@@ -18,11 +15,11 @@ export class VerifyEmailUseCase {
     private readonly verifyTokenRepository: IVerifyTokenRepository,
   ) {}
 
-  async execute(dto: VerifyEmailDto): Promise<any> {
+  async execute(dto: VerifyUserAccountDto): Promise<any> {
     const verifyToken = await this.verifyTokenRepository.findByToken(dto.token);
 
     if (!verifyToken) {
-      throw new UnauthorizedException('Invalid token');
+      throw new InvalidTokenException();
     }
 
     const user = await this.userRepository.findById(
@@ -30,7 +27,7 @@ export class VerifyEmailUseCase {
     );
 
     if (!user) {
-      throw new NotFoundException('User not found.');
+      throw new UserNotFoundException();
     }
 
     user.activate();

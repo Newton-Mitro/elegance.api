@@ -3,6 +3,7 @@ import { ResetTokenMapper } from '../mappers/reset-token.mapper';
 import { ResetTokenEntity } from '../../domain/entities/reset-token.entity';
 import { IResetTokenRepository } from '../../domain/interfaces/reset-token.repository';
 import { PrismaService } from '../../../../core/prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PrismaResetTokenRepository implements IResetTokenRepository {
@@ -20,15 +21,23 @@ export class PrismaResetTokenRepository implements IResetTokenRepository {
     return token ? ResetTokenMapper.toDomain(token) : null;
   }
 
-  async save(entity: ResetTokenEntity): Promise<void> {
-    await this.prisma.resetToken.upsert({
+  async save(
+    entity: ResetTokenEntity,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
+    const client = tx ?? this.prisma;
+    await client.resetToken.upsert({
       where: { phone: entity.phone },
       update: ResetTokenMapper.toPersistence(entity),
       create: ResetTokenMapper.toPersistence(entity),
     });
   }
 
-  async deleteByPhone(phone: string): Promise<void> {
-    await this.prisma.resetToken.deleteMany({ where: { phone } });
+  async deleteByPhone(
+    phone: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
+    const client = tx ?? this.prisma;
+    await client.resetToken.deleteMany({ where: { phone } });
   }
 }

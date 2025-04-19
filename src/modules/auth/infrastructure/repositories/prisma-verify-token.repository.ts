@@ -4,6 +4,7 @@ import { IVerifyTokenRepository } from '../../domain/interfaces/verify-token.rep
 import { VerifyTokenEntity } from '../../domain/entities/verify-token.entity';
 import { PrismaService } from '../../../../core/prisma/prisma.service';
 import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PrismaVerifyTokenRepository extends IVerifyTokenRepository {
@@ -27,18 +28,25 @@ export class PrismaVerifyTokenRepository extends IVerifyTokenRepository {
     return record ? VerifyTokenMapper.toDomain(record) : null;
   }
 
-  async save(entity: VerifyTokenEntity): Promise<void> {
+  async save(
+    entity: VerifyTokenEntity,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
+    const client = tx ?? this.prisma;
     const data = VerifyTokenMapper.toPersistence(entity);
-
-    await this.prisma.verifyToken.upsert({
+    await client.verifyToken.upsert({
       where: { userId: data.userId },
       update: data,
       create: data,
     });
   }
 
-  async deleteByUserId(userId: UniqueEntityID): Promise<void> {
-    await this.prisma.verifyToken.delete({
+  async deleteByUserId(
+    userId: UniqueEntityID,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
+    const client = tx ?? this.prisma;
+    await client.verifyToken.delete({
       where: { userId: userId.toString() },
     });
   }

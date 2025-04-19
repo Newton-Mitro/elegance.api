@@ -1,8 +1,10 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { RefreshTokenDto } from '../dto/refresh-token.dto';
 import { JwtRefreshTokenStrategy } from '../../infrastructure/strategies/jwt-refresh-token.strategy';
 import { JwtAccessTokenStrategy } from '../../infrastructure/strategies/jwt-access-token.strategy';
 import { IRefreshTokenRepository } from '../../domain/interfaces/refresh-token.repository';
+import { UnauthorizedAccessException } from '../../../../core/exceptions/unauthorized-access.exception';
+import { InvalidTokenException } from '../../../../core/exceptions/invalid-token.exception';
 
 @Injectable()
 export class RefreshTokenUseCase {
@@ -19,13 +21,11 @@ export class RefreshTokenUseCase {
         dto.refreshToken,
       );
 
-      console.log(decodedUser);
-
       const refreshToken = await this.refreshTokenRepository.findByToken(
         dto.refreshToken,
       );
       if (!refreshToken) {
-        throw new UnauthorizedException('Invalid refresh token');
+        throw new InvalidTokenException();
       }
 
       const payload = {
@@ -45,7 +45,7 @@ export class RefreshTokenUseCase {
       return { accessToken: newAccessToken };
     } catch (e) {
       console.log(e);
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedAccessException();
     }
   }
 }

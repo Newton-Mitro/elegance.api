@@ -4,13 +4,18 @@ import { UserRoleEntity } from '../../domain/entities/user-role.entity';
 import { PrismaService } from '../../../../core/prisma/prisma.service';
 import { RoleEntity } from '../../domain/entities/role.entity';
 import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PrismaUserRoleRepository implements IUserRoleRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async assignRoleToUser(userRole: UserRoleEntity): Promise<void> {
-    await this.prisma.userRoles.create({
+  async assignRoleToUser(
+    userRole: UserRoleEntity,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
+    const client = tx ?? this.prisma;
+    await client.userRoles.create({
       data: {
         userId: userRole.userId,
         roleId: userRole.roleId,
@@ -21,8 +26,12 @@ export class PrismaUserRoleRepository implements IUserRoleRepository {
     });
   }
 
-  async revokeRoleFromUser(userRole: UserRoleEntity): Promise<void> {
-    await this.prisma.userRoles.update({
+  async revokeRoleFromUser(
+    userRole: UserRoleEntity,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
+    const client = tx ?? this.prisma;
+    await client.userRoles.update({
       where: {
         userId_roleId: {
           userId: userRole.userId,

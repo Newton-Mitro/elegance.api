@@ -1,8 +1,9 @@
-import { ResetTokenEntity } from '../../domain/entities/reset-token.entity';
+import { ResetTokenEntity } from '../entities/reset-token.entity';
+import { Prisma } from '@prisma/client';
 
-export abstract class IResetTokenRepository {
-  abstract findByPhone(phone: string): Promise<ResetTokenEntity | null>;
-  abstract findByToken(token: string): Promise<ResetTokenEntity | null>;
-  abstract save(entity: ResetTokenEntity): Promise<void>;
-  abstract deleteByPhone(phone: string): Promise<void>;
+export interface IResetTokenRepository {
+  findByToken(token: string): Promise<ResetTokenEntity | null>;
+  findByPhone(phone: string): Promise<ResetTokenEntity | null>;
+  save(entity: ResetTokenEntity, tx?: Prisma.TransactionClient): Promise<void>;
+  deleteByPhone(phone: string, tx?: Prisma.TransactionClient): Promise<void>;
 }
