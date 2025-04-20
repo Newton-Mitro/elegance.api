@@ -1,0 +1,7 @@
+export enum VoucherType {
+  PAYMENT = 'PAYMENT',
+  RECEIPT = 'RECEIPT',
+  JOURNAL = 'JOURNAL',
+  CONTRA = 'CONTRA',
+  ADJUSTMENT = 'ADJUSTMENT',
+}
