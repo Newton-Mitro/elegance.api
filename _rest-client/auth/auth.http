@@ -21,7 +21,7 @@ Content-Type: application/json
 
 ### SET TOKEN
 @refreshToken = {{login.response.body.data.refreshToken}}
-@accessToken = {{login.response.body.data.accessToken}}
+# @accessToken = {{login.response.body.data.accessToken}}
 
 ###
 

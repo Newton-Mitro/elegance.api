@@ -6,14 +6,12 @@ import { SaleModule } from './modules/sale/sale.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { UserModule } from './modules/user/user.module';
 import { AppointmentModule } from './modules/appointment/appointment.module';
-import { ServiceCategoryModule } from './modules/service-category/service-category.module';
 import { AccountingModule } from './modules/accounting/accounting.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DiscountModule } from './modules/discount/discount.module';
 import { InvoiceModule } from './modules/invoice/invoice.module';
 import { LoyaltyModule } from './modules/loyalty/loyalty.module';
 import { NotificationModule } from './modules/notification/notification.module';
-import { ProductCategoryModule } from './modules/product-category/product-category.module';
 import { VatModule } from './modules/vat/vat.module';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
@@ -31,8 +29,6 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     PaymentModule,
     UserModule,
     AppointmentModule,
-    ServiceCategoryModule,
-    ProductCategoryModule,
     DiscountModule,
     LoyaltyModule,
     AuthModule,
