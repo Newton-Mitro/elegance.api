@@ -5,6 +5,10 @@ import { JwtAccessTokenStrategy } from '../../infrastructure/strategies/jwt-acce
 import { IRefreshTokenRepository } from '../../domain/interfaces/refresh-token.repository';
 import { UnauthorizedAccessException } from '../../../../core/exceptions/unauthorized-access.exception';
 import { InvalidTokenException } from '../../../../core/exceptions/invalid-token.exception';
+import { IUserRepository } from '../../../user/domain/repositories/user.repository';
+import { IUserRoleRepository } from '../../../user/domain/repositories/user-role.repository';
+import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
+import { UserAggregateMapper } from '../../../user/application/mappers/user-aggregate-dto.mapper';
 
 @Injectable()
 export class RefreshTokenUseCase {
@@ -13,6 +17,10 @@ export class RefreshTokenUseCase {
     private readonly jwtAccessTokenStrategy: JwtAccessTokenStrategy,
     @Inject('IRefreshTokenRepository')
     private readonly refreshTokenRepository: IRefreshTokenRepository,
+    @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository,
+    @Inject('IUserRoleRepository')
+    private readonly userRoleRepository: IUserRoleRepository,
   ) {}
 
   async execute(dto: RefreshTokenDto): Promise<{ accessToken: string }> {
@@ -28,17 +36,17 @@ export class RefreshTokenUseCase {
         throw new InvalidTokenException();
       }
 
-      const payload = {
-        id: decodedUser.id,
-        name: decodedUser.name,
-        phone: decodedUser.phone,
-        email: decodedUser.email,
-        profilePictureUrl: decodedUser.profilePictureUrl,
-        status: decodedUser.status,
-        createdAt: decodedUser.createdAt,
-        updatedAt: decodedUser.updatedAt,
-        roles: decodedUser.roles,
-      };
+      const user = await this.userRepository.findById(
+        new UniqueEntityID(decodedUser.id),
+      );
+
+      const roles = await this.userRoleRepository.getUserRoles(decodedUser.id);
+
+      if (!user) {
+        throw new InvalidTokenException();
+      }
+
+      const payload = UserAggregateMapper.toDto(user, roles);
 
       const newAccessToken = await this.jwtAccessTokenStrategy.sign(payload);
 

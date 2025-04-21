@@ -57,6 +57,6 @@ export class PrismaVoucherRepository implements VoucherRepository {
     });
 
     if (!data) return null;
-    return VoucherMapper.toEntity(data);
+    return VoucherMapper.toDomain(data);
   }
 }

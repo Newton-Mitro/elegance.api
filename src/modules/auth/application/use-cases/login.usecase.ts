@@ -6,11 +6,10 @@ import { JwtAccessTokenStrategy } from '../../infrastructure/strategies/jwt-acce
 import { JwtRefreshTokenStrategy } from '../../infrastructure/strategies/jwt-refresh-token.strategy';
 import { isEmail } from 'class-validator';
 import { LoginResponseDto } from '../dto/login-response.dto';
-import { UserMapper } from '../../../user/application/mappers/user-dto.mapper';
 import { IUserRoleRepository } from '../../../user/domain/repositories/user-role.repository';
-import { RoleDtoMapper } from '../../../user/application/mappers/role.mapper';
 import { UserAccountNotVerifiedException } from '../../../../core/exceptions/user-account-not-verified.exception';
 import { InvalidCredentialsException } from '../../../../core/exceptions/invalid-credentials.exception';
+import { UserAggregateMapper } from '../../../user/application/mappers/user-aggregate-dto.mapper';
 
 @Injectable()
 export class LoginUseCase {
@@ -50,9 +49,7 @@ export class LoginUseCase {
       user.id.toString(),
     );
 
-    const userDto = UserMapper.toDto(user);
-    const rolesDtos = RoleDtoMapper.toDtos(roles);
-    const userAggregateDto = { ...userDto, roles: rolesDtos };
+    const userAggregateDto = UserAggregateMapper.toDto(user, roles);
 
     const accessToken =
       await this.jwtAccessTokenStrategy.sign(userAggregateDto);

@@ -1,8 +1,10 @@
+import { RoleEntity } from '../../domain/entities/role.entity';
 import { UserEntity } from '../../domain/entities/user.entity';
-import { UserDto } from '../dto/user.dto';
+import { UserAggregateDto } from '../dto/user-aggregate.dto';
+import { RoleDtoMapper } from './role.mapper';
 
-export class UserMapper {
-  static toDto(user: UserEntity): UserDto {
+export class UserAggregateMapper {
+  static toDto(user: UserEntity, roles: RoleEntity[]): UserAggregateDto {
     return {
       id: user.id.toString(),
       name: user.name,
@@ -12,6 +14,7 @@ export class UserMapper {
       status: user.status,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      roles: RoleDtoMapper.toDtos(roles),
     };
   }
 }
