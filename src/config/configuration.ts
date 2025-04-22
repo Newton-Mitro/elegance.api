@@ -7,7 +7,7 @@ export default () => ({
   database: {
     url: process.env.DATABASE_URL || 'mysql://localhost:3306/defaultdb',
     user: process.env.DATABASE_USER || 'root',
-    password: process.env.DATABASE_PASSWORD || 'password',
+    password: process.env.DATABASE_PASSWORD || '',
     name: process.env.DATABASE_NAME || 'mydb',
   },
 

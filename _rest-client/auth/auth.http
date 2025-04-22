@@ -64,7 +64,7 @@ Content-Type: application/json
 
 {
   "phone": "0123456789",
-  "token": "e2659a81-f5d8-4c28-a7a7-52fa30824e23",
+  "token": "38f83c5f-a124-447d-b8ff-1573434c53b1",
   "newPassword": "newPassword123"
 }
 
@@ -76,7 +76,7 @@ Content-Type: application/json
 
 {
   "email": "john@example.com",
-  "token": "bea4dba3-d06d-4d17-bf07-35e718f42f60"
+  "token": "088257ad-2968-4794-a202-f56fcadc4fee"
 }
 
 ###

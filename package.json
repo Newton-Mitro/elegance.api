@@ -15,6 +15,7 @@
     "start:dev": "npm-run-all --parallel nest:dev copy:templates",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "generate:jwt": "node -e \"console.log(require('crypto').randomBytes(64).toString('hex'))\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
