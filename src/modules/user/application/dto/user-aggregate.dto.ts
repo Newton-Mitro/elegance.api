@@ -9,7 +9,7 @@ export class RoleDto {
 export class UserAggregateDto {
   id: string;
   name?: string;
-  phone: string;
+  phone?: string;
   email?: string;
   profilePictureUrl?: string;
   status: UserStatus;

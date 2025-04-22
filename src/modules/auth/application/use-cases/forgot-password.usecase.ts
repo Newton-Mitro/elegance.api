@@ -33,7 +33,7 @@ export class ForgotPasswordUseCase {
 
     const token = randomUUID();
     const resetToken = ResetTokenEntity.create({
-      phone: user.phone,
+      identifier: dto.identifier,
       token: token,
     });
 

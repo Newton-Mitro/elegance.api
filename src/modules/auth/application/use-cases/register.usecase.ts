@@ -17,6 +17,7 @@ import { UserAlreadyRegisteredException } from '../../../../core/exceptions/user
 import { PrismaService } from '../../../../core/prisma/prisma.service'; // import PrismaService
 import { Prisma } from '@prisma/client'; // for tx type
 import { ResourceNotFoundException } from '../../../../core/exceptions/resource-not-found.exception';
+import { Email } from '../../../user/domain/value-objects/email.vo';
 
 @Injectable()
 export class RegisterUseCase {
@@ -35,7 +36,8 @@ export class RegisterUseCase {
   ) {}
 
   async execute(dto: RegisterDto) {
-    const user = isEmail(dto.identifier)
+    const isEmailIdentifier = isEmail(dto.identifier);
+    const user = isEmailIdentifier
       ? await this.userRepository.findByEmail(dto.identifier)
       : await this.userRepository.findByPhone(dto.identifier);
 
@@ -47,7 +49,8 @@ export class RegisterUseCase {
       // Create user
       const newUser = UserEntity.create({
         name: dto.name,
-        phone: dto.identifier,
+        email: isEmailIdentifier ? Email.create(dto.identifier) : undefined,
+        phone: !isEmailIdentifier ? dto.identifier : undefined,
         password: hashedPassword,
         status: UserStatus.INACTIVE,
       });

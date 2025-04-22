@@ -16,8 +16,10 @@ export class PrismaResetTokenRepository implements IResetTokenRepository {
     return resetToken ? ResetTokenMapper.toDomain(resetToken) : null;
   }
 
-  async findByPhone(phone: string): Promise<ResetTokenEntity | null> {
-    const token = await this.prisma.resetToken.findUnique({ where: { phone } });
+  async findByPhone(identifier: string): Promise<ResetTokenEntity | null> {
+    const token = await this.prisma.resetToken.findUnique({
+      where: { identifier },
+    });
     return token ? ResetTokenMapper.toDomain(token) : null;
   }
 
@@ -27,17 +29,17 @@ export class PrismaResetTokenRepository implements IResetTokenRepository {
   ): Promise<void> {
     const client = tx ?? this.prisma;
     await client.resetToken.upsert({
-      where: { phone: entity.phone },
+      where: { identifier: entity.identifier },
       update: ResetTokenMapper.toPersistence(entity),
       create: ResetTokenMapper.toPersistence(entity),
     });
   }
 
   async deleteByPhone(
-    phone: string,
+    identifier: string,
     tx?: Prisma.TransactionClient,
   ): Promise<void> {
     const client = tx ?? this.prisma;
-    await client.resetToken.deleteMany({ where: { phone } });
+    await client.resetToken.deleteMany({ where: { identifier } });
   }
 }

@@ -6,7 +6,7 @@ export class ResetTokenMapper {
   static toDomain(prismaModel: ResetToken): ResetTokenEntity {
     return ResetTokenEntity.create(
       {
-        phone: prismaModel.phone,
+        identifier: prismaModel.identifier,
         token: prismaModel.token,
         createdAt: prismaModel.createdAt,
         updatedAt: prismaModel.updatedAt,
@@ -18,7 +18,7 @@ export class ResetTokenMapper {
   static toPersistence(entity: ResetTokenEntity): ResetToken {
     return {
       id: entity.id.toString(),
-      phone: entity.phone,
+      identifier: entity.identifier,
       token: entity.token,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,

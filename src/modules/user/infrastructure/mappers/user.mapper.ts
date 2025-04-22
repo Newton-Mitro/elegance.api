@@ -8,7 +8,7 @@ export class UserEntityMapper {
     return UserEntity.create(
       {
         name: raw.name ?? undefined,
-        phone: raw.phone,
+        phone: raw.phone ?? undefined,
         email: raw.email ? Email.create(raw.email) : undefined,
         profilePictureUrl: raw.profilePictureUrl ?? undefined,
         password: raw.password,

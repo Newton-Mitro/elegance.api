@@ -5,7 +5,7 @@ import { Email } from '../value-objects/email.vo';
 
 interface UserProps extends EntityBaseProps {
   name?: string;
-  phone: string;
+  phone?: string;
   email?: Email;
   profilePictureUrl?: string;
   password: string;
@@ -30,7 +30,7 @@ export class UserEntity extends Entity<UserProps> {
     return this.props.name;
   }
 
-  get phone(): string {
+  get phone(): string | undefined {
     return this.props.phone;
   }
 

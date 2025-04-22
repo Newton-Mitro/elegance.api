@@ -32,7 +32,7 @@ enum UserStatus {
 model User {
   id                String     @id @default(uuid())
   name              String?
-  phone             String     @unique
+  phone             String?    @unique
   email             String?    @unique
   profilePictureUrl String?
   password          String
@@ -98,11 +98,11 @@ model RefreshToken {
 }
 
 model ResetToken {
-  id        String   @id @default(uuid())
-  phone     String   @unique
-  token     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(uuid())
+  identifier String   @unique
+  token      String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model VerifyToken {

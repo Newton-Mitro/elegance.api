@@ -24,7 +24,7 @@ export class ResetPasswordUseCase {
       throw new InvalidTokenException();
     }
 
-    const user = await this.userRepository.findByPhone(resetToken.phone);
+    const user = await this.userRepository.findByPhone(resetToken.identifier);
 
     if (!user) {
       throw new UserNotFoundException();
