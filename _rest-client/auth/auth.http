@@ -90,3 +90,4 @@ Authorization: Bearer {{accessToken}}
 ### Logout
 POST http://localhost:3000/auth/logout
 Authorization: Bearer {{refreshToken}}
+
