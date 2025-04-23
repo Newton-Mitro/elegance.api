@@ -48,16 +48,6 @@ Content-Type: application/json
 
 ###
 
-### Forgot Password
-POST http://localhost:3000/auth/send-verification-link
-Content-Type: application/json
-
-{
-  "identifier": "john@example.com"
-}
-
-###
-
 ### Reset Password
 POST http://localhost:3000/auth/reset-password
 Content-Type: application/json
@@ -70,13 +60,23 @@ Content-Type: application/json
 
 ###
 
+### Forgot Password
+POST http://localhost:3000/auth/send-verification-link
+Content-Type: application/json
+
+{
+  "identifier": "john@example.com"
+}
+
+###
+
 ### Verify Email
 POST http://localhost:3000/auth/verify-email
 Content-Type: application/json
 
 {
   "email": "john@example.com",
-  "token": "088257ad-2968-4794-a202-f56fcadc4fee"
+  "token": "43061cf2-b5d8-42d4-a97a-d401bfa902a2"
 }
 
 ###
