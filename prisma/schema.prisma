@@ -15,13 +15,6 @@ datasource db {
 // ===========================
 // 👤 USERS
 // ===========================
-// enum UserRole {
-//   ADMIN
-//   MANAGER
-//   RECEPTIONIST
-//   STYLIST
-//   CUSTOMER
-// }
 enum UserStatus {
   ACTIVE
   INACTIVE
