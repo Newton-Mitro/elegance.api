@@ -8,16 +8,19 @@ import {
   Put,
   Query,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '../../../auth/presentation/guards/auth.guard';
 import { RolesGuard } from '../../../auth/presentation/guards/roles.guard';
 import { Roles } from '../../../../core/decorators/roles.decorator';
 import { Role } from '../../../../core/enums/role.enum';
+import { Public } from '../../../../core/decorators/public.decorator';
+
 import { UserAggregateDto } from '../../application/dto/user-aggregate.dto';
 import { UserDto } from '../../application/dto/user.dto';
-import { Public } from '../../../../core/decorators/public.decorator';
 import { CreateUserDto } from '../../application/dto/create-user.dto';
 import { UpdateUserDto } from '../../application/dto/update-user.dto';
+
 import { CreateUserUseCase } from '../../application/use-cases/create-user.usecase';
 import { UpdateUserUseCase } from '../../application/use-cases/update-user.usecase';
 import { DeleteUserUseCase } from '../../application/use-cases/delete-user.usecase';
@@ -38,7 +41,9 @@ export class UserController {
   @Post()
   @Roles(Role.ADMIN)
   async createUser(@Body() dto: CreateUserDto): Promise<UserAggregateDto> {
-    return this.createUserUseCase.execute(dto);
+    const result = await this.createUserUseCase.execute(dto);
+
+    return result;
   }
 
   @Put(':id')
@@ -47,26 +52,30 @@ export class UserController {
     @Param('id') id: string,
     @Body() dto: UpdateUserDto,
   ): Promise<UserAggregateDto> {
-    return this.updateUserUseCase.execute(id, dto);
+    const result = await this.updateUserUseCase.execute(id, dto);
+    return result;
   }
 
   @Delete(':id')
   @Roles(Role.ADMIN)
   async deleteUser(@Param('id') id: string): Promise<void> {
-    return this.deleteUserUseCase.execute(id);
+    const result = await this.deleteUserUseCase.execute(id);
+
+    return result;
   }
 
   @Get(':id')
   @Roles(Role.ADMIN, Role.RECEPTIONIST)
   async getUserById(@Param('id') id: string): Promise<UserAggregateDto> {
-    return this.getUserByIdUseCase.execute(id);
+    const result = await this.getUserByIdUseCase.execute(id);
+    return result;
   }
 
   @Get()
   @Roles(Role.ADMIN)
   async getAllUsers(
-    @Query('page') page = 1,
-    @Query('limit') limit = 10,
+    @Query('page', ParseIntPipe) page = 1,
+    @Query('limit', ParseIntPipe) limit = 10,
     @Query('search') search?: string,
   ): Promise<{
     data: UserDto[];
@@ -74,18 +83,21 @@ export class UserController {
     page: number;
     limit: number;
   }> {
-    const { users, total } = await this.getAllUsersUseCase.execute({
+    const result = await this.getAllUsersUseCase.execute({
       page,
       limit,
       search,
     });
-    return { data: users, total, page, limit };
+
+    return result;
   }
 
   @Public()
   @Post('register')
   async register(@Body() dto: CreateUserDto): Promise<UserAggregateDto> {
     const payload = { ...dto, role: Role.CUSTOMER };
-    return this.createUserUseCase.execute(payload);
+    const result = await this.createUserUseCase.execute(payload);
+
+    return result;
   }
 }
