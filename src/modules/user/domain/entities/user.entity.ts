@@ -3,7 +3,7 @@ import { Entity, EntityBaseProps } from '../../../../core/entities/entity';
 import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
 import { Email } from '../value-objects/email.vo';
 
-interface UserProps extends EntityBaseProps {
+export interface UserProps extends EntityBaseProps {
   name?: string;
   phone?: string;
   email?: Email;
@@ -48,6 +48,35 @@ export class UserEntity extends Entity<UserProps> {
 
   get status(): UserStatus {
     return this.props.status;
+  }
+
+  public updateUser({
+    name,
+    phone,
+    email,
+  }: {
+    name?: string;
+    phone?: string;
+    email?: Email;
+  }): void {
+    if (name !== undefined) {
+      this.props.name = name;
+    }
+
+    if (phone !== undefined) {
+      this.props.phone = phone;
+    }
+
+    if (email !== undefined) {
+      this.props.email = email;
+    }
+
+    this.touch(); // updates updatedAt if supported
+  }
+
+  public updateProfilePicture(url: string): void {
+    this.props.profilePictureUrl = url;
+    this.touch();
   }
 
   public isActive(): boolean {

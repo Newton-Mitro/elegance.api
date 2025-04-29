@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { VerifyUserAccountDto } from '../dto/verify-account.dto';
 import { IVerifyTokenRepository } from '../../domain/interfaces/verify-token.repository';
-import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
 import { InvalidTokenException } from '../../../../core/exceptions/invalid-token.exception';
 import { UserNotFoundException } from '../../../../core/exceptions/user-not-found.exception';
 
@@ -22,9 +21,7 @@ export class VerifyUserAccountUseCase {
       throw new InvalidTokenException();
     }
 
-    const user = await this.userRepository.findById(
-      new UniqueEntityID(verifyToken.userId),
-    );
+    const user = await this.userRepository.findById(verifyToken.userId);
 
     if (!user) {
       throw new UserNotFoundException();

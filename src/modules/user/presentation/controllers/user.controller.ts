@@ -18,6 +18,11 @@ import { UserDto } from '../../application/dto/user.dto';
 import { Public } from '../../../../core/decorators/public.decorator';
 import { CreateUserDto } from '../../application/dto/create-user.dto';
 import { UpdateUserDto } from '../../application/dto/update-user.dto';
+import { CreateUserUseCase } from '../../application/use-cases/create-user.usecase';
+import { UpdateUserUseCase } from '../../application/use-cases/update-user.usecase';
+import { DeleteUserUseCase } from '../../application/use-cases/delete-user.usecase';
+import { GetUserByIdUseCase } from '../../application/use-cases/get-user-by-id.usecase';
+import { GetAllUsersUseCase } from '../../application/use-cases/get-all-users.usecase';
 
 @Controller('user')
 @UseGuards(AuthGuard, RolesGuard)
@@ -52,7 +57,7 @@ export class UserController {
   }
 
   @Get(':id')
-  @Roles(Role.ADMIN, Role.STAFF)
+  @Roles(Role.ADMIN, Role.RECEPTIONIST)
   async getUserById(@Param('id') id: string): Promise<UserAggregateDto> {
     return this.getUserByIdUseCase.execute(id);
   }

@@ -1,30 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { IUserRepository } from '../../domain/repositories/user.repository';
+import { UserDtoMapper } from '../mappers/user-dto.mapper';
+import {
+  IUserRepository,
+  UserPaginationParams,
+} from '../../domain/repositories/user.repository';
+import { Paginate } from '../../../../core/types/paginate.type';
 import { UserDto } from '../dto/user.dto';
-
-export interface GetAllUsersInput {
-  page: number;
-  limit: number;
-  search?: string;
-}
-
-export interface GetAllUsersOutput {
-  users: UserDto[];
-  total: number;
-}
 
 @Injectable()
 export class GetAllUsersUseCase {
   constructor(private readonly userRepo: IUserRepository) {}
 
-  async execute(input: GetAllUsersInput): Promise<GetAllUsersOutput> {
-    const skip = (input.page - 1) * input.limit;
-    const [users, total] = await this.userRepo.findAndCount({
-      skip,
-      take: input.limit,
-      search: input.search,
+  async execute(input: UserPaginationParams): Promise<Paginate<UserDto>> {
+    const result = await this.userRepo.findPaginated({
+      page: input.page,
+      limit: input.limit,
+      filter: input.filter,
+      sortBy: input.sortBy,
+      sortOrder: input.sortOrder,
     });
 
-    return { users, total };
+    const users = result.data.map((user) => UserDtoMapper.toDto(user));
+
+    return {
+      data: users,
+      total: result.total,
+      page: result.page,
+      totalPages: result.totalPages,
+    };
   }
 }

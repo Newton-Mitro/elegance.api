@@ -7,7 +7,6 @@ import { UnauthorizedAccessException } from '../../../../core/exceptions/unautho
 import { InvalidTokenException } from '../../../../core/exceptions/invalid-token.exception';
 import { IUserRepository } from '../../../user/domain/repositories/user.repository';
 import { IUserRoleRepository } from '../../../user/domain/repositories/user-role.repository';
-import { UniqueEntityID } from '../../../../core/entities/unique-entity-id';
 import { UserAggregateMapper } from '../../../user/application/mappers/user-aggregate-dto.mapper';
 
 @Injectable()
@@ -36,9 +35,7 @@ export class RefreshTokenUseCase {
         throw new InvalidTokenException();
       }
 
-      const user = await this.userRepository.findById(
-        new UniqueEntityID(decodedUser.id),
-      );
+      const user = await this.userRepository.findById(decodedUser.id);
 
       const roles = await this.userRoleRepository.getUserRoles(decodedUser.id);
 
