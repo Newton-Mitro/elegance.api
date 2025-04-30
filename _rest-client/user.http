@@ -54,5 +54,5 @@ GET http://localhost:3000/user?page=1&limit=10 HTTP/1.1
 Authorization: Bearer {{accessToken}}
 
 ### Get a user by ID
-GET http://localhost:3000/user/{{35987a01-f876-4a0e-8fbc-15a7bc55e302}} HTTP/1.1
+GET http://localhost:3000/user/35987a01-f876-4a0e-8fbc-15a7bc55e302 HTTP/1.1
 Authorization: Bearer {{accessToken}}
