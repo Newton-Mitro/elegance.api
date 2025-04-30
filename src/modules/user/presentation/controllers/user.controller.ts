@@ -7,28 +7,27 @@ import {
   Post,
   Put,
   Query,
-  UseGuards,
   ParseIntPipe,
+  Res,
+  HttpStatus,
 } from '@nestjs/common';
-import { AuthGuard } from '../../../auth/presentation/guards/auth.guard';
-import { RolesGuard } from '../../../auth/presentation/guards/roles.guard';
 import { Roles } from '../../../../core/decorators/roles.decorator';
 import { Role } from '../../../../core/enums/role.enum';
-import { Public } from '../../../../core/decorators/public.decorator';
 
-import { UserAggregateDto } from '../../application/dto/user-aggregate.dto';
-import { UserDto } from '../../application/dto/user.dto';
 import { CreateUserDto } from '../../application/dto/create-user.dto';
 import { UpdateUserDto } from '../../application/dto/update-user.dto';
+import { Response } from 'express';
 
 import { CreateUserUseCase } from '../../application/use-cases/create-user.usecase';
 import { UpdateUserUseCase } from '../../application/use-cases/update-user.usecase';
 import { DeleteUserUseCase } from '../../application/use-cases/delete-user.usecase';
 import { GetUserByIdUseCase } from '../../application/use-cases/get-user-by-id.usecase';
 import { GetAllUsersUseCase } from '../../application/use-cases/get-all-users.usecase';
+import { UserFilter } from '../../domain/repositories/user.repository';
+import { UserProps } from '../../domain/entities/user.entity';
+import { SortOrder } from '../../../../core/types/sort_order.type';
 
 @Controller('user')
-@UseGuards(AuthGuard, RolesGuard)
 export class UserController {
   constructor(
     private readonly createUserUseCase: CreateUserUseCase,
@@ -39,65 +38,81 @@ export class UserController {
   ) {}
 
   @Post()
-  @Roles(Role.ADMIN)
-  async createUser(@Body() dto: CreateUserDto): Promise<UserAggregateDto> {
+  // @Roles(Role.ADMIN)
+  async createUser(@Body() dto: CreateUserDto, @Res() res: Response) {
     const result = await this.createUserUseCase.execute(dto);
 
-    return result;
+    return res.status(HttpStatus.CREATED).json({
+      statusCode: HttpStatus.CREATED,
+      message: 'User successfully created.',
+      data: result,
+    });
   }
 
   @Put(':id')
-  @Roles(Role.ADMIN)
+  // @Roles(Role.ADMIN)
   async updateUser(
     @Param('id') id: string,
     @Body() dto: UpdateUserDto,
-  ): Promise<UserAggregateDto> {
+    @Res() res: Response,
+  ) {
     const result = await this.updateUserUseCase.execute(id, dto);
-    return result;
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: 'User successfully updated.',
+      data: result,
+    });
   }
 
   @Delete(':id')
-  @Roles(Role.ADMIN)
-  async deleteUser(@Param('id') id: string): Promise<void> {
-    const result = await this.deleteUserUseCase.execute(id);
-
-    return result;
+  // @Roles(Role.ADMIN)
+  async deleteUser(@Param('id') id: string): Promise<{
+    statusCode: number;
+    message: string;
+  }> {
+    await this.deleteUserUseCase.execute(id);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'User successfully deleted.',
+    };
   }
 
   @Get(':id')
-  @Roles(Role.ADMIN, Role.RECEPTIONIST)
-  async getUserById(@Param('id') id: string): Promise<UserAggregateDto> {
+  // @Roles(Role.ADMIN, Role.RECEPTIONIST)
+  async getUserById(@Param('id') id: string, @Res() res: Response) {
     const result = await this.getUserByIdUseCase.execute(id);
-    return result;
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: 'User successfully fetched.',
+      data: result,
+    });
   }
 
   @Get()
-  @Roles(Role.ADMIN)
+  // @Roles(Role.ADMIN)
   async getAllUsers(
+    @Res() res: Response,
     @Query('page', ParseIntPipe) page = 1,
     @Query('limit', ParseIntPipe) limit = 10,
-    @Query('search') search?: string,
-  ): Promise<{
-    data: UserDto[];
-    total: number;
-    page: number;
-    limit: number;
-  }> {
+    @Query('filter') filter?: UserFilter,
+    @Query('sortBy') sortBy?: keyof UserProps,
+    @Query('sortOrder') sortOrder?: SortOrder,
+  ) {
     const result = await this.getAllUsersUseCase.execute({
       page,
       limit,
-      search,
+      filter,
+      sortBy,
+      sortOrder,
     });
 
-    return result;
-  }
-
-  @Public()
-  @Post('register')
-  async register(@Body() dto: CreateUserDto): Promise<UserAggregateDto> {
-    const payload = { ...dto, role: Role.CUSTOMER };
-    const result = await this.createUserUseCase.execute(payload);
-
-    return result;
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: 'Users successfully fetched.',
+      data: result.data,
+      total: result.total,
+      page: result.page,
+      totalPages: result.totalPages,
+    });
   }
 }

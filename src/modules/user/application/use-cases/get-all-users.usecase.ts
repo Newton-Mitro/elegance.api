@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserDtoMapper } from '../mappers/user-dto.mapper';
 import {
   IUserRepository,
@@ -9,7 +9,10 @@ import { UserDto } from '../dto/user.dto';
 
 @Injectable()
 export class GetAllUsersUseCase {
-  constructor(private readonly userRepo: IUserRepository) {}
+  constructor(
+    @Inject('IUserRepository')
+    private readonly userRepo: IUserRepository,
+  ) {}
 
   async execute(input: UserPaginationParams): Promise<Paginate<UserDto>> {
     const result = await this.userRepo.findPaginated({

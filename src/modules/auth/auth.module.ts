@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './presentation/controllers/auth.controller';
@@ -30,7 +30,7 @@ import { SendVerificationLinkUseCase } from './application/use-cases/send-verifi
 @Module({
   imports: [
     NotificationModule,
-    UserModule,
+    forwardRef(() => UserModule),
     PrismaModule,
     ConfigModule,
     JwtModule.registerAsync({
@@ -52,6 +52,7 @@ import { SendVerificationLinkUseCase } from './application/use-cases/send-verifi
       },
     }),
   ],
+  controllers: [AuthController],
   providers: [
     LoginUseCase,
     RegisterUseCase,
@@ -88,6 +89,9 @@ import { SendVerificationLinkUseCase } from './application/use-cases/send-verifi
     ResetPasswordListener,
     SendVerificationLinkListener,
   ],
-  controllers: [AuthController],
+  exports: [
+    JwtAccessTokenStrategy, // ✅ THIS IS REQUIRED
+    JwtRefreshTokenStrategy,
+  ],
 })
 export class AuthModule {}

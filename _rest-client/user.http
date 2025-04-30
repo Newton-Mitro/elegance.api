@@ -1,0 +1,58 @@
+# @name login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "identifier": "john@example.com",
+  "password": "newPassword123"
+}
+
+### SET TOKEN
+@refreshToken = {{login.response.body.data.refreshToken}}
+
+###
+
+# @name refresh
+POST http://localhost:3000/auth/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### SET TOKEN
+@accessToken = {{refresh.response.body.data.accessToken}}
+
+
+### Create a new user
+POST http://localhost:3000/user HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "secret123"
+}
+
+### Update a user
+PUT http://localhost:3000/user/{{userId}} HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Updated Name",
+  "email": "updated@example.com"
+}
+
+### Delete a user
+DELETE http://localhost:3000/user/{{userId}} HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+### Get all users
+GET http://localhost:3000/user?page=1&limit=10 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+### Get a user by ID
+GET http://localhost:3000/user/{{35987a01-f876-4a0e-8fbc-15a7bc55e302}} HTTP/1.1
+Authorization: Bearer {{accessToken}}
