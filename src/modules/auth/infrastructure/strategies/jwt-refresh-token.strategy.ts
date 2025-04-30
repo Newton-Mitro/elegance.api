@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtConfig } from '../../../../config/types/config.type';
 import { IRefreshTokenRepository } from '../../domain/interfaces/refresh-token.repository';
 import { RefreshTokenEntity } from '../../domain/entities/refresh-token.entity';
-import { UserAggregateDto } from '../../../user/application/dto/user-aggregate.dto';
+import { UserAggregateDto } from '../../../user/application/dto/user/user-aggregate.dto';
 import { InvalidTokenException } from '../../../../core/exceptions/invalid-token.exception';
 
 @Injectable()

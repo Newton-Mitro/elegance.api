@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IUserRepository } from '../../domain/repositories/user.repository';
-import { UserEntity } from '../../domain/entities/user.entity';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { Email } from '../../domain/value-objects/email.vo';
 import { UserStatus } from '@prisma/client';
-import { UserAggregateDto } from '../dto/user-aggregate.dto';
-import { IUserRoleRepository } from '../../domain/repositories/user-role.repository';
-import { UserAggregateMapper } from '../mappers/user-aggregate-dto.mapper';
-import { UserAlreadyRegisteredException } from '../../../../core/exceptions/user-already-registered.exception';
+import { UserAlreadyRegisteredException } from '../../../../../core/exceptions/user-already-registered.exception';
+import { UserEntity } from '../../../domain/entities/user.entity';
+import { IUserRoleRepository } from '../../../domain/repositories/user-role.repository';
+import { IUserRepository } from '../../../domain/repositories/user.repository';
+import { Email } from '../../../domain/value-objects/email.vo';
+import { CreateUserDto } from '../../dto/user/create-user.dto';
+import { UserAggregateDto } from '../../dto/user/user-aggregate.dto';
+import { UserAggregateMapper } from '../../mappers/user-aggregate-dto.mapper';
 
 @Injectable()
 export class CreateUserUseCase {

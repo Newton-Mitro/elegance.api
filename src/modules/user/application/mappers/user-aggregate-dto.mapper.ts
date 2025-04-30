@@ -1,6 +1,6 @@
 import { RoleEntity } from '../../domain/entities/role.entity';
 import { UserEntity } from '../../domain/entities/user.entity';
-import { UserAggregateDto } from '../dto/user-aggregate.dto';
+import { UserAggregateDto } from '../dto/user/user-aggregate.dto';
 import { RoleDtoMapper } from './role.mapper';
 
 export class UserAggregateMapper {

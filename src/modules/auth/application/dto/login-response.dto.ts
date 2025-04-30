@@ -1,4 +1,4 @@
-import { UserAggregateDto } from '../../../user/application/dto/user-aggregate.dto';
+import { UserAggregateDto } from '../../../user/application/dto/user/user-aggregate.dto';
 
 export interface LoginResponseDto {
   accessToken: string;

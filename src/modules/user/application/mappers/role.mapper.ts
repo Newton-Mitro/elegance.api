@@ -1,6 +1,6 @@
 // application/mappers/role.mapper.ts
 import { RoleEntity } from '../../domain/entities/role.entity';
-import { RoleDto } from '../dto/user-aggregate.dto';
+import { RoleDto } from '../dto/user/user-aggregate.dto';
 
 export class RoleDtoMapper {
   static toDto(role: RoleEntity): RoleDto {

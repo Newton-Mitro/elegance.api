@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IUserRepository } from '../../domain/repositories/user.repository';
-import { UserAggregateDto } from '../dto/user-aggregate.dto';
-import { IUserRoleRepository } from '../../domain/repositories/user-role.repository';
-import { UserAggregateMapper } from '../mappers/user-aggregate-dto.mapper';
+import { IUserRoleRepository } from '../../../domain/repositories/user-role.repository';
+import { IUserRepository } from '../../../domain/repositories/user.repository';
+import { UserAggregateDto } from '../../dto/user/user-aggregate.dto';
+import { UserAggregateMapper } from '../../mappers/user-aggregate-dto.mapper';
 
 @Injectable()
 export class GetUserByIdUseCase {

@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UserDtoMapper } from '../mappers/user-dto.mapper';
+import { Paginate } from '../../../../../core/types/paginate.type';
 import {
   IUserRepository,
   UserPaginationParams,
-} from '../../domain/repositories/user.repository';
-import { Paginate } from '../../../../core/types/paginate.type';
-import { UserDto } from '../dto/user.dto';
+} from '../../../domain/repositories/user.repository';
+import { UserDto } from '../../dto/user/user.dto';
+import { UserDtoMapper } from '../../mappers/user-dto.mapper';
 
 @Injectable()
 export class GetAllUsersUseCase {

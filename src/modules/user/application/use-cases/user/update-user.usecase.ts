@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IUserRepository } from '../../domain/repositories/user.repository';
-import { UpdateUserDto } from '../dto/update-user.dto';
-import { Email } from '../../domain/value-objects/email.vo';
-import { IUserRoleRepository } from '../../domain/repositories/user-role.repository';
-import { UserAggregateMapper } from '../mappers/user-aggregate-dto.mapper';
-import { UserAggregateDto } from '../dto/user-aggregate.dto';
+import { IUserRoleRepository } from '../../../domain/repositories/user-role.repository';
+import { IUserRepository } from '../../../domain/repositories/user.repository';
+import { Email } from '../../../domain/value-objects/email.vo';
+import { UpdateUserDto } from '../../dto/user/update-user.dto';
+import { UserAggregateDto } from '../../dto/user/user-aggregate.dto';
+import { UserAggregateMapper } from '../../mappers/user-aggregate-dto.mapper';
 
 @Injectable()
 export class UpdateUserUseCase {

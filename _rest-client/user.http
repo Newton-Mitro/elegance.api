@@ -25,7 +25,7 @@ Content-Type: application/json
 
 
 ### Create a new user
-POST http://localhost:3000/user HTTP/1.1
+POST http://localhost:3000/users HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
@@ -36,7 +36,7 @@ Authorization: Bearer {{accessToken}}
 }
 
 ### Update a user
-PUT http://localhost:3000/user/{{userId}} HTTP/1.1
+PUT http://localhost:3000/users/{{userId}} HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
@@ -46,13 +46,13 @@ Authorization: Bearer {{accessToken}}
 }
 
 ### Delete a user
-DELETE http://localhost:3000/user/{{userId}} HTTP/1.1
+DELETE http://localhost:3000/users/{{userId}} HTTP/1.1
 Authorization: Bearer {{accessToken}}
 
 ### Get all users
-GET http://localhost:3000/user?page=1&limit=10 HTTP/1.1
+GET http://localhost:3000/users?page=1&limit=10 HTTP/1.1
 Authorization: Bearer {{accessToken}}
 
 ### Get a user by ID
-GET http://localhost:3000/user/35987a01-f876-4a0e-8fbc-15a7bc55e302 HTTP/1.1
+GET http://localhost:3000/users/35987a01-f876-4a0e-8fbc-15a7bc55e302 HTTP/1.1
 Authorization: Bearer {{accessToken}}

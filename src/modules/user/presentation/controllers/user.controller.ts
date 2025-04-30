@@ -14,20 +14,20 @@ import {
 import { Roles } from '../../../../core/decorators/roles.decorator';
 import { Role } from '../../../../core/enums/role.enum';
 
-import { CreateUserDto } from '../../application/dto/create-user.dto';
-import { UpdateUserDto } from '../../application/dto/update-user.dto';
+import { CreateUserDto } from '../../application/dto/user/create-user.dto';
+import { UpdateUserDto } from '../../application/dto/user/update-user.dto';
 import { Response } from 'express';
 
-import { CreateUserUseCase } from '../../application/use-cases/create-user.usecase';
-import { UpdateUserUseCase } from '../../application/use-cases/update-user.usecase';
-import { DeleteUserUseCase } from '../../application/use-cases/delete-user.usecase';
-import { GetUserByIdUseCase } from '../../application/use-cases/get-user-by-id.usecase';
-import { GetAllUsersUseCase } from '../../application/use-cases/get-all-users.usecase';
 import { UserFilter } from '../../domain/repositories/user.repository';
 import { UserProps } from '../../domain/entities/user.entity';
 import { SortOrder } from '../../../../core/types/sort_order.type';
+import { CreateUserUseCase } from '../../application/use-cases/user/create-user.usecase';
+import { DeleteUserUseCase } from '../../application/use-cases/user/delete-user.usecase';
+import { GetAllUsersUseCase } from '../../application/use-cases/user/get-all-users.usecase';
+import { GetUserByIdUseCase } from '../../application/use-cases/user/get-user-by-id.usecase';
+import { UpdateUserUseCase } from '../../application/use-cases/user/update-user.usecase';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(
     private readonly createUserUseCase: CreateUserUseCase,
